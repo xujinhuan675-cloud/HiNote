@@ -3,7 +3,6 @@ import { HiNoteView, VIEW_TYPE_HINOTE } from './src/core/HiNoteView';
 import { AISettingTab } from './src/settings/SettingTab';
 import { PluginSettings, DEFAULT_SETTINGS } from './src/types';
 import html2canvas from 'html2canvas';
-import { ChatViewManager } from './src/views/chat/ChatViewManager';
 import { registerCommands, createWindowManager } from './src/commands';
 import { InitializationManager } from './src/services/InitializationManager';
 import { WindowManager } from './src/services/WindowManager';
@@ -77,11 +76,6 @@ export default class CommentPlugin extends Plugin {
 		// 清理初始化管理器
 		if (this.initManager) {
 			await this.initManager.cleanup();
-		}
-
-		// 如果对话窗口打开，关闭它
-		if (ChatViewManager.instance) {
-			ChatViewManager.instance.close();
 		}
 	}
 

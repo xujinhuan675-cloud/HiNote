@@ -2,7 +2,6 @@ import { Plugin } from 'obsidian';
 import { WindowManager } from '../services/WindowManager';
 import { registerOpenCommentPanelCommand } from './openCommentPanel';
 import { registerOpenMainWindowCommand } from './openMainWindow';
-import { registerOpenChatWindowCommand } from './openChatWindow';
 
 /**
  * 注册所有命令
@@ -18,9 +17,6 @@ export function registerCommands(
     
     // 注册在主窗口打开评论面板命令
     registerOpenMainWindowCommand(plugin, windowManager, ensureInitialized);
-    
-    // 注册打开 AI 对话窗口命令
-    registerOpenChatWindowCommand(plugin, ensureInitialized);
 }
 
 /**

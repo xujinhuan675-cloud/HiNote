@@ -124,15 +124,6 @@ export default {
     "AI comments have been added": "AI comments have been added",
     "AI comments failed:": "AI comments failed:",
 
-//ChatView
-
-    "Chat": "Chat",
-    "Failed to process dropped highlight:": "Failed to process dropped highlight:",
-    "highlighted notes": " highlighted notes",
-    "Input message...": "Input message...",
-    "Unable to access the Ollama model, please check the service.": "Unable to access the Ollama model, please check the service.",
-    "Unable to get Gemini model list, please check API Key and network connection.": "Unable to get Gemini model list, please check API key and network connection.",
-
 //ExportModal
 
     "Download": "Download",
@@ -165,7 +156,6 @@ export default {
 
 //main
 
-    "Open AI chat window": "Open AI chat window",
     "Open HiNote window": "Open HiNote window",
 
 // Settings

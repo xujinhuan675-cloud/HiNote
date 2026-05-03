@@ -142,12 +142,6 @@ export interface PluginSettings extends HighlightSettings {
     ai: AISettings;
     comments?: Record<string, Record<string, HighlightInfo>>;
     'flashcard-license'?: FlashcardLicense;
-    contextOptions?: {
-        strategy: 'paragraph' | 'section' | 'surrounding' | 'smart';
-        surroundingLines?: number;
-        includeTitle?: boolean;
-        maxLength?: number;
-    };
     showCommentWidget?: boolean;
 }
 
@@ -231,12 +225,6 @@ export const DEFAULT_SETTINGS: PluginSettings = {
     export: {
         exportPath: ''  // 默认为空，表示保存在 vault 根目录
     },
-    contextOptions: {
-        strategy: 'smart',
-        includeTitle: true,
-        maxLength: 2000,
-        surroundingLines: 3
-    },
     showCommentWidget: true
 };
 
@@ -246,25 +234,6 @@ export interface CommentUpdateEvent {
     highlightId: string;
     text: string;
     comments: CommentItem[];
-}
-
-export interface ChatMessageState {
-    type: 'user' | 'assistant' | 'preview';
-    content: string;
-    previewCards?: {
-        text: string;
-        createdAt: number;
-        updatedAt: number;
-        paragraphId: string;
-        position: number;
-        paragraphOffset: number;
-    }[];
-}
-
-export interface ChatViewState {
-    chatHistory: { role: "user" | "assistant", content: string }[];
-    draggedContents: HighlightInfo[];
-    currentPreviewContainer: boolean;
 }
 
 declare global {

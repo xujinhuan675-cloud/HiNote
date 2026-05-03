@@ -65,11 +65,10 @@ Export all your highlighted text and comments as a new note, displayed in Callou
 
 ## Extended features of the main view
 
-Drag the right sidebar window to the main view to unlock more features, such as a list of notes with highlighted text, all highlighted cards, and the AI chat window (see below for details).
+Drag the right sidebar window to the main view to unlock more features, such as a list of notes with highlighted text, all highlighted cards, and HiCard.
 
 - Notes List: Displays all notes in the knowledge base that contain highlighted text, with the number of highlights indicated.
 - All Highlights: Shows all highlighted cards in the knowledge base, allowing you to focus more on the highlighted content.
-- AI Chat: You can open the AI chat window via the chat icon in the bottom right corner (see below for details).
 - HiCard: Implements the functionality to generate FlashCards from your highlighted text and comments, assisting you in memorizing and learning (Pro feature)
 
 ![Main view](./doc/main-view.jpg)
@@ -87,16 +86,6 @@ Next, configure your custom Prompt. Here, you can use two fields to obtain the h
 Finally, you can use your custom Prompt in the AI button on the highlighted card. Or you can input your custom Prompt in the comment input box and directly click the Tab key to trigger the AI service.
 
 ![AI Comment](./doc/ai-comment.jpg)
-
----
-
-## AI Chat
-
-In the bottom right corner of the main view, you can click the conversation icon or use the shortcut command (`Ctrl/Cmd+P`) to open the AI conversation window. This window can be freely dragged and resized. Within the conversation window, you can switch the AI service model and clear the current conversation content (note that once cleared, it cannot be restored, and exporting or saving is not supported at this time).
-
-Additionally, you can drag highlighted cards into the conversation window as part of the dialogue, and it supports dragging in multiple highlighted items simultaneously. You can also set the context of the highlighted text in the conversation window.
-
-![AI Chat](./doc/ai-chat.jpg)
 
 ---
 
