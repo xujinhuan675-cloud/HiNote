@@ -2,6 +2,13 @@ import { TFile } from "obsidian";
 import { HighlightInfo } from '../../types/highlight';
 import { HighlightInfo as HiNote } from '../../types/highlight';
 import { HighlightRepository } from '../../repositories/HighlightRepository';
+import {
+    buildHighlightMatchIndexes,
+    findExactHighlightMatch,
+    findMergeCandidate,
+    findSimpleHighlightMatch,
+    findStoredHighlightMatch
+} from './HighlightMatchStrategies';
 
 /**
  * 高亮匹配器
@@ -22,40 +29,14 @@ export class HighlightMatcher {
         target: HiNote,
         candidates: HiNote[]
     ): HiNote | null {
-        if (!candidates || candidates.length === 0) return null;
-
-        let match = this.exactMatch(target, candidates);
-        if (match) return match;
-
-        match = this.positionMatch(target, candidates);
-        if (match) return match;
-
-        return null;
+        return findSimpleHighlightMatch(target, candidates);
     }
 
     /**
      * 精确匹配高亮文本和近似位置。
      */
     static findExactMatch(target: HiNote, candidates: HiNote[]): HiNote | null {
-        return this.exactMatch(target, candidates);
-    }
-
-    private static exactMatch(target: HiNote, candidates: HiNote[]): HiNote | null {
-        return candidates.find(h =>
-            h.text === target.text &&
-            (typeof h.position !== 'number' ||
-             typeof target.position !== 'number' ||
-             Math.abs(h.position - target.position) < 10)
-        ) || null;
-    }
-
-    private static positionMatch(target: HiNote, candidates: HiNote[]): HiNote | null {
-        if (typeof target.position !== 'number') return null;
-
-        return candidates.find(h =>
-            typeof h.position === 'number' &&
-            Math.abs(h.position - target.position) < 30
-        ) || null;
+        return findExactHighlightMatch(target, candidates);
     }
 
     /**
@@ -64,53 +45,7 @@ export class HighlightMatcher {
      */
     public findMatchingHighlight(file: TFile, highlight: HiNote, highlightRepository: HighlightRepository): HiNote | null {
         const fileHighlights = highlightRepository.getCachedHighlights(file.path) || [];
-        if (!fileHighlights || fileHighlights.length === 0) {
-            return null;
-        }
-        
-        // 1. 首先尝试精确匹配（文本和位置）
-        let matchingHighlight = fileHighlights.find((h: HiNote) => {
-            if (h.text !== highlight.text) return false;
-            if (typeof h.position === 'number' && typeof highlight.position === 'number') {
-                return Math.abs(h.position - highlight.position) < 10;
-            }
-            return false;
-        });
-        
-        if (matchingHighlight) return matchingHighlight;
-        
-        // 2. 文本+位置组合匹配（容差 500，适应较大编辑偏移）
-        if (highlight.text && highlight.position !== undefined) {
-            const textCandidates = fileHighlights
-                .filter((h: HiNote) => h.text === highlight.text && typeof h.position === 'number')
-                .sort((a, b) => 
-                    Math.abs((a.position ?? 0) - (highlight.position ?? 0)) -
-                    Math.abs((b.position ?? 0) - (highlight.position ?? 0))
-                );
-            if (textCandidates.length > 0 && 
-                Math.abs((textCandidates[0].position ?? 0) - (highlight.position ?? 0)) < 500) {
-                return textCandidates[0];
-            }
-        }
-        
-        // 3. 纯文本精确匹配（当该文本只有唯一候选时）
-        if (highlight.text) {
-            const textOnlyCandidates = fileHighlights.filter((h: HiNote) => h.text === highlight.text);
-            if (textOnlyCandidates.length === 1) {
-                return textOnlyCandidates[0];
-            }
-        }
-        
-        // 4. 位置模糊匹配（允许文本有变化）
-        if (highlight.position !== undefined) {
-            matchingHighlight = fileHighlights.find((h: HiNote) => 
-                typeof h.position === 'number' && 
-                Math.abs(h.position - highlight.position) < 50
-            );
-            if (matchingHighlight) return matchingHighlight;
-        }
-        
-        return null;
+        return findStoredHighlightMatch(fileHighlights, highlight);
     }
     
     /**
@@ -125,92 +60,20 @@ export class HighlightMatcher {
             return highlights.map(h => this.createHighlightInfo(h, file));
         }
         
-        // 构建索引
-        const idIndex = new Map<string, HiNote>();
-        const textIndex = new Map<string, HiNote[]>();
-        const positionIndex = new Map<number, HiNote[]>();
-        
-        for (const comment of storedComments) {
-            if (comment.id) idIndex.set(comment.id, comment);
-            if (comment.text) {
-                if (!textIndex.has(comment.text)) textIndex.set(comment.text, []);
-                textIndex.get(comment.text)!.push(comment);
-            }
-            if (comment.position !== undefined) {
-                const bucket = Math.floor(comment.position / 50);
-                if (!positionIndex.has(bucket)) positionIndex.set(bucket, []);
-                positionIndex.get(bucket)!.push(comment);
-            }
-        }
-        
+        const indexes = buildHighlightMatchIndexes(storedComments);
         const usedCommentIds = new Set<string>();
         // 收集需要更新 position 的高亮，在合并完成后批量异步更新存储
         const positionUpdates: { id: string; newPosition: number }[] = [];
         
         // 合并高亮和评论数据
         const mergedHighlights = highlights.map(highlight => {
-            // 策略 1: ID 精确匹配
-            if (highlight.id && idIndex.has(highlight.id)) {
-                const storedComment = idIndex.get(highlight.id)!;
-                if (storedComment.id && !usedCommentIds.has(storedComment.id)) {
-                    usedCommentIds.add(storedComment.id);
-                    this.trackPositionUpdate(positionUpdates, storedComment, highlight);
-                    return this.createMergedHighlight(highlight, storedComment, file);
-                }
+            const storedComment = findMergeCandidate(highlight, indexes, usedCommentIds);
+            if (storedComment?.id) {
+                usedCommentIds.add(storedComment.id);
+                this.trackPositionUpdate(positionUpdates, storedComment, highlight);
+                return this.createMergedHighlight(highlight, storedComment, file);
             }
-            
-            // 策略 2: 文本+位置组合匹配（容差 500，适应较大编辑偏移）
-            if (highlight.text && textIndex.has(highlight.text)) {
-                const candidates = textIndex.get(highlight.text)!;
-                // 按位置差异排序，优先匹配最近的
-                const sortedCandidates = candidates
-                    .filter(c => c.id && !usedCommentIds.has(c.id) &&
-                        highlight.position !== undefined &&
-                        c.position !== undefined)
-                    .sort((a, b) => 
-                        Math.abs((a.position ?? 0) - (highlight.position ?? 0)) -
-                        Math.abs((b.position ?? 0) - (highlight.position ?? 0))
-                    );
-                for (const candidate of sortedCandidates) {
-                    if (Math.abs((candidate.position ?? 0) - (highlight.position ?? 0)) < 500) {
-                        usedCommentIds.add(candidate.id!);
-                        this.trackPositionUpdate(positionUpdates, candidate, highlight);
-                        return this.createMergedHighlight(highlight, candidate, file);
-                    }
-                }
-            }
-            
-            // 策略 3: 纯文本精确匹配（当该文本只有唯一候选时，无需位置验证）
-            if (highlight.text && textIndex.has(highlight.text)) {
-                const candidates = textIndex.get(highlight.text)!
-                    .filter(c => c.id && !usedCommentIds.has(c.id));
-                if (candidates.length === 1) {
-                    usedCommentIds.add(candidates[0].id!);
-                    this.trackPositionUpdate(positionUpdates, candidates[0], highlight);
-                    return this.createMergedHighlight(highlight, candidates[0], file);
-                }
-            }
-            
-            // 策略 4: 位置模糊匹配
-            if (highlight.position !== undefined) {
-                const bucket = Math.floor(highlight.position / 50);
-                for (let b = bucket - 1; b <= bucket + 1; b++) {
-                    if (positionIndex.has(b)) {
-                        const candidates = positionIndex.get(b)!;
-                        for (const candidate of candidates) {
-                            if (candidate.id &&
-                                !usedCommentIds.has(candidate.id) &&
-                                candidate.position !== undefined &&
-                                Math.abs(candidate.position - highlight.position) < 50) {
-                                usedCommentIds.add(candidate.id);
-                                this.trackPositionUpdate(positionUpdates, candidate, highlight);
-                                return this.createMergedHighlight(highlight, candidate, file);
-                            }
-                        }
-                    }
-                }
-            }
-            
+
             return this.createHighlightInfo(highlight, file);
         });
 

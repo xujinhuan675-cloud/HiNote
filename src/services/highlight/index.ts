@@ -6,4 +6,5 @@ export { HighlightExtractor } from './HighlightExtractor';
 export { HighlightIndexFileWatcher } from './HighlightIndexFileWatcher';
 export { HighlightIndexStore } from './HighlightIndexStore';
 export { HighlightIndexer } from './HighlightIndexer';
+export * from './HighlightMatchStrategies';
 export { HighlightMatcher } from './HighlightMatcher';
