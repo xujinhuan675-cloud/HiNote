@@ -1,6 +1,13 @@
-import { CardGroup, FSRSRating, FlashcardState } from "../../types/FSRSTypes";
-import { t } from "../../../i18n";
+import { FSRSRating } from "../../types/FSRSTypes";
 import type { FlashcardComponentContext } from "../FlashcardComponentContext";
+import {
+    clearGroupCompletionMessage,
+    findGroupByName,
+    getCompletionMessage,
+    getDueCardsForToday,
+    resetGroupProgressForCompletion,
+    restoreReviewPosition
+} from "./FlashcardReviewQueue";
 
 /**
  * 闪卡操作类，负责处理卡片的翻转、评分等操作
@@ -75,19 +82,7 @@ export class FlashcardOperations {
         if (cards.length === 0) {
             // 检查当前分组
             const groupName = this.component.getCurrentGroupName();
-            
-            // 显示完成消息
-            let message = t('No cards due for review');
-            
-            // 自定义分组
-            if (groupName) {
-                const group = this.component.getFsrsManager().getCardGroups().find((g: CardGroup) => g.name === groupName);
-                if (group) {
-                    message = t('Group completed: ') + group.name + t('. Add more cards in Settings, but remember: more cards = more reviews.');
-                }
-            } else {
-                message = t('All flashcards completed for today!');
-            }
+            const message = getCompletionMessage(this.component.getFsrsManager(), groupName);
             
             // 设置分组完成消息
             this.component.setGroupCompletionMessage(groupName, message);
@@ -130,33 +125,8 @@ export class FlashcardOperations {
         const groupName = this.component.getCurrentGroupName();
         const fsrsManager = this.component.getFsrsManager();
         
-        // 先保存当前状态，以防是切换分组
-        const currentCards = this.component.getCards();
-        const currentGroupName = this.component.getCurrentGroupName();
-        if (currentCards.length > 0 && currentGroupName && currentGroupName !== groupName) {
-            // 如果是切换分组，先保存当前分组的状态
-            const currentCards = this.component.getCards();
-            const currentIndex = this.component.getCurrentIndex();
-            const currentCardId = currentCards.length > 0 && currentIndex < currentCards.length ? 
-                currentCards[currentIndex].id : undefined;
-                
-            const currentProgress = {
-                currentIndex: currentIndex,
-                isFlipped: this.component.isCardFlipped(),
-                currentCardId: currentCardId
-            };
-
-            // 更新分组进度
-            const uiState = fsrsManager.getUIState();
-            if (!uiState.groupProgress) {
-                uiState.groupProgress = {};
-            }
-            uiState.groupProgress[currentGroupName] = currentProgress;
-            fsrsManager.updateUIState(uiState);
-        }
-        
         // 获取分组 ID
-        const group = fsrsManager.getCardGroups().find((g: CardGroup) => g.name === groupName);
+        const group = findGroupByName(fsrsManager, groupName);
         if (!group) {
             console.error(`未找到名称为 ${groupName} 的分组`);
             return;
@@ -164,49 +134,15 @@ export class FlashcardOperations {
         
         // 检查分组中是否有今天需要学习的卡片
         const allCards = fsrsManager.getCardsByGroupId(group.id);
-        const fsrsService = fsrsManager.fsrsService;
-        
-        // 筛选出今天需要学习或复习的卡片
-        const cardsForToday = allCards.filter((card: FlashcardState) => {
-            // 新卡片（从未学习过）
-            if (card.reviews === 0 && card.lastReview === 0) return true;
-            // 到期需要复习的卡片
-            if (fsrsService.isDue(card)) return true;
-            // 不再包含稳定性低的卡片，因为这会导致重复学习
-            // 只有真正到期的卡片才会被加载
-            return false;
-        });
+        const cardsForToday = getDueCardsForToday(allCards, fsrsManager);
         
         // 如果没有今天需要学习的卡片，显示完成消息
         if (cardsForToday.length === 0) {
-            let message = t('No cards due for review');
-            
-            // Custom group
-            if (groupName) {
-                message = t('Group completed: ') + group.name + t('. Add more cards in Settings, but remember: more cards = more reviews.');
-            } else {
-                message = t('All flashcards completed for today!');
-            }
-            
+            const message = getCompletionMessage(fsrsManager, groupName);
             this.component.setGroupCompletionMessage(groupName, message);
             this.component.setCards([]);
             this.component.updateProgress();
-            
-            // 重置 UI 状态，完全清除卡片状态
-            const uiState = fsrsManager.getUIState();
-            if (!uiState.groupProgress) {
-                uiState.groupProgress = {};
-            }
-            
-            // 完全重置分组进度状态，删除卡片ID和翻转状态
-            uiState.groupProgress[groupName] = {
-                currentIndex: 0,
-                isFlipped: false,
-                currentCardId: undefined,
-                completionMessage: message // 设置完成消息
-            };
-            
-            fsrsManager.updateUIState(uiState);
+            resetGroupProgressForCompletion(fsrsManager, groupName, message);
             this.component.getRenderer().render();
             
             // 保存状态
@@ -221,72 +157,18 @@ export class FlashcardOperations {
         const savedProgress = this.component.getGroupProgress(groupName);
         
         // 有卡片需要学习，确保清除完成消息
-        // 使用不同的变量名避免重复声明
-        const cardUIState = fsrsManager.getUIState();
-        if (!cardUIState.groupProgress) {
-            cardUIState.groupProgress = {};
-        }
-        
-        if (!cardUIState.groupProgress[groupName]) {
-            cardUIState.groupProgress[groupName] = {
-                currentIndex: 0,
-                isFlipped: false,
-                currentCardId: undefined,
-                completionMessage: undefined
-            };
-        } else {
-            // 清除完成消息，但保留其他状态
-            cardUIState.groupProgress[groupName].completionMessage = undefined;
-        }
-        
-        fsrsManager.updateUIState(cardUIState);
+        clearGroupCompletionMessage(fsrsManager, groupName);
         
         // 设置卡片列表
         this.component.setCards(cards);
         
         if (cards.length > 0) {
-            // 恢复保存的UI状态
-            if (savedProgress) {
-                let newIndex = 0; // 默认从第一张卡片开始
-                
-                // 如果有保存的卡片ID，尝试通过ID找到对应的卡片
-                if (savedProgress.currentCardId) {
-                    // 在新的卡片列表中查找保存的卡片ID
-                    const foundIndex = cards.findIndex((card: FlashcardState) => card.id === savedProgress.currentCardId);
-                    if (foundIndex !== -1) {
-                        // 如果找到了卡片，使用该索引
-                        newIndex = foundIndex;
-                    } else {
-                        // 如果没有找到，使用保存的索引（确保不超出范围）
-                        newIndex = Math.min(savedProgress.currentIndex, cards.length - 1);
-                    }
-                } else {
-                    // 如果没有保存卡片ID，使用保存的索引（确保不超出范围）
-                    newIndex = Math.min(savedProgress.currentIndex, cards.length - 1);
-                }
-                
-                // 设置当前索引和翻转状态
-                this.component.setCurrentIndex(newIndex);
-                this.component.setCardFlipped(savedProgress.isFlipped);
-            } else {
-                // 如果没有保存的状态，从头开始
-                this.component.setCurrentIndex(0);
-                this.component.setCardFlipped(false);
-            }
+            const restoredPosition = restoreReviewPosition(cards, savedProgress);
+            this.component.setCurrentIndex(restoredPosition.currentIndex);
+            this.component.setCardFlipped(restoredPosition.isFlipped);
         } else {
             // If there are no cards, show completion message
-            let message = t('No cards due for review');
-            
-            // Custom group
-            if (groupName) {
-                const group = fsrsManager.getCardGroups().find((g: CardGroup) => g.name === groupName);
-                if (group) {
-                    message = t('Group completed: ') + group.name + t('. Add more cards in Settings, but remember: more cards = more reviews.');
-                }
-            } else {
-                message = t('All flashcards completed for today!');
-            }
-            
+            const message = getCompletionMessage(fsrsManager, groupName);
             this.component.setGroupCompletionMessage(groupName, message);
         }
         
