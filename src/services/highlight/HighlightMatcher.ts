@@ -1,4 +1,4 @@
-import { App, TFile } from "obsidian";
+import { TFile } from "obsidian";
 import { HighlightInfo } from '../../types/highlight';
 import { HighlightInfo as HiNote } from '../../types/highlight';
 import { HighlightRepository } from '../../repositories/HighlightRepository';
@@ -12,7 +12,6 @@ import { HighlightRepository } from '../../repositories/HighlightRepository';
  */
 export class HighlightMatcher {
     constructor(
-        private app: App,
         private getHighlightRepository?: () => HighlightRepository | undefined
     ) {}
 

@@ -33,7 +33,7 @@ export class HighlightService {
         getHighlightRepository?: () => HighlightRepository | undefined
     ) {
         this.extractor = new HighlightExtractor(app, getSettings);
-        this.matcher = new HighlightMatcher(app, getHighlightRepository);
+        this.matcher = new HighlightMatcher(getHighlightRepository);
         this.indexer = new HighlightIndexer(app, this.extractor);
         this.batchOps = new HighlightBatchOps(app, this.extractor);
     }
