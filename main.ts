@@ -1,12 +1,12 @@
 import { Plugin } from 'obsidian';
 import { HiNoteView, VIEW_TYPE_HINOTE } from './src/core/HiNoteView';
 import { AISettingTab } from './src/settings/SettingTab';
-import { DEFAULT_SETTINGS, PluginSettings } from './src/types/settings';
-import html2canvas from 'html2canvas';
+import { PluginSettings } from './src/types/settings';
 import { registerCommands, createWindowManager } from './src/commands';
 import { InitializationManager } from './src/services/InitializationManager';
 import { WindowManager } from './src/services/WindowManager';
 import type { PluginServices } from './src/services/PluginServices';
+import { migrateSettings, normalizeSettings } from './src/settings/SettingsMigration';
 
 export default class CommentPlugin extends Plugin {
 	settings: PluginSettings;
@@ -41,10 +41,7 @@ export default class CommentPlugin extends Plugin {
 	async onload() {
 		// 加载设置
 		const loadedData = await this.loadData();
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, loadedData);
-
-		// 将 html2canvas 添加到全局对象（轻量级操作）
-		(window as Window & typeof globalThis & { html2canvas?: typeof html2canvas }).html2canvas = html2canvas;
+		this.settings = migrateSettings(loadedData);
 
 		// 初始化管理器
 		this.initManager = new InitializationManager(this);
@@ -97,33 +94,8 @@ export default class CommentPlugin extends Plugin {
 	}
 
 	async saveSettings() {
-        // 确保基础设置存在
-        if (!this.settings) {
-            this.settings = { ...DEFAULT_SETTINGS };
-        }
-
-        // 保护现有的 flashcard-license 数据
-        const existingData = await this.loadData();
-        if (existingData?.['flashcard-license']) {
-            this.settings['flashcard-license'] = existingData['flashcard-license'];
-        }
-
-        // 确保高亮相关设置存在
-        this.settings.excludePatterns = this.settings.excludePatterns ?? DEFAULT_SETTINGS.excludePatterns;
-        this.settings.useCustomPattern = this.settings.useCustomPattern ?? DEFAULT_SETTINGS.useCustomPattern;
-        if (!this.settings.regexRules || !Array.isArray(this.settings.regexRules)) {
-            this.settings.regexRules = [...DEFAULT_SETTINGS.regexRules];
-        }
-
-        // 确保 AI 和导出设置存在
-        this.settings.ai = this.settings.ai || { ...DEFAULT_SETTINGS.ai };
-        this.settings.export = this.settings.export || { ...DEFAULT_SETTINGS.export };
-
-        // 确保 prompts 对象存在
-        if (!this.settings.ai.prompts) {
-            this.settings.ai.prompts = { ...DEFAULT_SETTINGS.ai.prompts };
-        }
-
-        await this.saveData(this.settings);
-    }
+		const existingData = await this.loadData();
+		this.settings = normalizeSettings(this.settings, existingData);
+		await this.saveData(this.settings);
+	}
 }
