@@ -186,8 +186,8 @@ export class EventCoordinator {
             }
         };
 
-        this.component.registerDomEvent(document, 'keydown', keydownHandler);
-        this.component.registerDomEvent(document, 'keyup', keyupHandler);
+        this.component.registerDomEvent(activeDocument, 'keydown', keydownHandler);
+        this.component.registerDomEvent(activeDocument, 'keyup', keyupHandler);
     }
 
     /**

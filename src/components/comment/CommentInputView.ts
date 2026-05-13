@@ -32,7 +32,7 @@ export function renderEditCommentInput(
     const contentEl = commentEl.querySelector('.hi-note-content') as HTMLElement;
     if (!contentEl) return null;
 
-    const textarea = document.createElement('textarea');
+    const textarea = activeDocument.createElement('textarea');
     textarea.value = existingComment.content || '';
     textarea.className = 'hi-note-input';
     textarea.style.minHeight = `${contentEl.offsetHeight}px`;
@@ -68,7 +68,7 @@ export function renderCreateCommentInput(
     card: HTMLElement,
     callbacks: CommentInputViewCallbacks
 ): RenderedCommentInput {
-    const inputSection = document.createElement('div');
+    const inputSection = activeDocument.createElement('div');
     inputSection.className = 'hi-note-input';
 
     const textarea = inputSection.createEl("textarea");

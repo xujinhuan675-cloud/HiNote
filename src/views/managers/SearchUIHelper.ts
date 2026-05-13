@@ -29,7 +29,7 @@ export class SearchUIHelper {
         this.destroy();
         
         // 创建提示容器
-        const hintsContainer = document.body.createDiv({
+        const hintsContainer = activeDocument.body.createDiv({
             cls: 'search-prefix-hints show'
         });
         
@@ -77,12 +77,12 @@ export class SearchUIHelper {
             const inputValue = this.searchInput.value.trim();
             
             if (inputValue === '') {
-                if (!document.body.contains(hintsContainer)) {
-                    document.body.appendChild(hintsContainer);
+                if (!activeDocument.body.contains(hintsContainer)) {
+                    activeDocument.body.appendChild(hintsContainer);
                     this.positionSearchHints(hintsContainer);
                 }
             } else {
-                if (hintsContainer && document.body.contains(hintsContainer)) {
+                if (hintsContainer && activeDocument.body.contains(hintsContainer)) {
                     hintsContainer.remove();
                 }
             }
@@ -95,16 +95,16 @@ export class SearchUIHelper {
             if (hintsContainer && !hintsContainer.contains(e.target as Node) && 
                 e.target !== this.searchInput) {
                 hintsContainer.remove();
-                document.removeEventListener('click', hideHintsOnClickOutside);
+                activeDocument.removeEventListener('click', hideHintsOnClickOutside);
             }
         };
         
         // 失去焦点时清理
         const handleBlur = () => {
             window.setTimeout(() => {
-                if (!document.activeElement || 
-                    (document.activeElement !== this.searchInput && 
-                     !hintsContainer.contains(document.activeElement as Node))) {
+                if (!activeDocument.activeElement ||
+                    (activeDocument.activeElement !== this.searchInput &&
+                     !hintsContainer.contains(activeDocument.activeElement as Node))) {
                     hintsContainer.remove();
                 }
             }, 200);
@@ -114,7 +114,7 @@ export class SearchUIHelper {
         
         // 添加点击事件监听器
         this.documentClickTimer = window.setTimeout(() => {
-            document.addEventListener('click', hideHintsOnClickOutside);
+            activeDocument.addEventListener('click', hideHintsOnClickOutside);
             this.documentClickTimer = null;
         }, 10);
         
@@ -148,7 +148,7 @@ export class SearchUIHelper {
         }
 
         // 移除提示框
-        const existingHints = document.querySelector('.search-prefix-hints');
+        const existingHints = activeDocument.querySelector('.search-prefix-hints');
         if (existingHints) {
             existingHints.remove();
         }
@@ -157,7 +157,7 @@ export class SearchUIHelper {
         if (this.searchHintsEventHandlers) {
             this.searchInput.removeEventListener('input', this.searchHintsEventHandlers.input);
             this.searchInput.removeEventListener('blur', this.searchHintsEventHandlers.blur);
-            document.removeEventListener('click', this.searchHintsEventHandlers.click);
+            activeDocument.removeEventListener('click', this.searchHintsEventHandlers.click);
             this.searchHintsEventHandlers = null;
         }
     }

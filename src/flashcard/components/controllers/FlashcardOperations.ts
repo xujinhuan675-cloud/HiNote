@@ -27,7 +27,7 @@ export class FlashcardOperations {
         this.component.setCardFlipped(flipped);
         
         // 只需要切换卡片的 CSS 类，所有的样式和动画效果都由 CSS 处理
-        const cardElement = document.querySelector('.flashcard');
+        const cardElement = activeDocument.querySelector('.flashcard');
         if (cardElement) {
             if (flipped) {
                 cardElement.classList.add('is-flipped');

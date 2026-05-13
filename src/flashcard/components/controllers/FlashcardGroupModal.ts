@@ -18,9 +18,9 @@ export interface FlashcardGroupModal {
 }
 
 export function createFlashcardGroupModal(group?: CardGroup): FlashcardGroupModal {
-    const modalOverlay = document.createElement('div');
+    const modalOverlay = activeDocument.createElement('div');
     modalOverlay.className = 'flashcard-modal-overlay';
-    document.body.appendChild(modalOverlay);
+    activeDocument.body.appendChild(modalOverlay);
 
     const modalContainer = modalOverlay.createDiv({ cls: 'flashcard-modal-container' });
     const modalContent = modalContainer.createDiv({ cls: 'flashcard-modal-content' });
@@ -49,9 +49,9 @@ export function createFlashcardGroupModal(group?: CardGroup): FlashcardGroupModa
     let handleKeyDown: (event: KeyboardEvent) => void;
     const close = () => {
         if (modalOverlay.isConnected) {
-            document.body.removeChild(modalOverlay);
+            activeDocument.body.removeChild(modalOverlay);
         }
-        document.removeEventListener('keydown', handleKeyDown);
+        activeDocument.removeEventListener('keydown', handleKeyDown);
     };
 
     handleKeyDown = (event: KeyboardEvent) => {
@@ -59,7 +59,7 @@ export function createFlashcardGroupModal(group?: CardGroup): FlashcardGroupModa
             close();
         }
     };
-    document.addEventListener('keydown', handleKeyDown);
+    activeDocument.addEventListener('keydown', handleKeyDown);
 
     return {
         saveButton,

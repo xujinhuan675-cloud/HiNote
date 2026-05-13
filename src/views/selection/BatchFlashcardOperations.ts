@@ -170,7 +170,7 @@ export class BatchFlashcardOperations {
             return await action(existingCard);
         }
 
-        const tempContainer = document.createElement("div");
+        const tempContainer = activeDocument.createElement("div");
         const tempCard = new HighlightCard(
             tempContainer,
             highlight,

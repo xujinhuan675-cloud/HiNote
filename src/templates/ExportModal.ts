@@ -112,7 +112,7 @@ export class ExportPreviewModal extends Modal {
         }).addEventListener('click', async () => {
             try {
                 // 创建临时容器用于导出
-                const exportContainer = document.createElement('div');
+                const exportContainer = activeDocument.createElement('div');
                 exportContainer.className = 'highlight-export-container';
                 
                 const template = getTemplate(this.selectedTemplateId);
@@ -124,7 +124,7 @@ export class ExportPreviewModal extends Modal {
                     this.addCommentsToContainer(exportContainer);
                 }
                 
-                document.body.appendChild(exportContainer);
+                activeDocument.body.appendChild(exportContainer);
 
                 const canvas = await this.html2canvasInstance(exportContainer, {
                     backgroundColor: null,
@@ -147,7 +147,7 @@ export class ExportPreviewModal extends Modal {
                 // 优化 canvas 导出质量
                 const dataUrl = canvas.toDataURL('image/png', 1.0);
 
-                const link = document.createElement('a');
+                const link = activeDocument.createElement('a');
                 link.download = `highlight-${this.selectedTemplateId}-${Date.now()}.png`;
                 link.href = dataUrl;
                 link.click();
@@ -184,29 +184,29 @@ export class ExportPreviewModal extends Modal {
         if (!footerElement) return;
         
         // 创建批注区域
-        const commentsContainer = document.createElement('div');
+        const commentsContainer = activeDocument.createElement('div');
         commentsContainer.className = 'highlight-export-comments-section';
         
         // 添加批注列表
-        const commentsList = document.createElement('div');
+        const commentsList = activeDocument.createElement('div');
         commentsList.className = 'highlight-export-comments-list';
         commentsContainer.appendChild(commentsList);
         
         // 渲染每条批注
         if (this.highlight.comments) {
             this.highlight.comments.forEach(comment => {
-                const commentItem = document.createElement('div');
+                const commentItem = activeDocument.createElement('div');
                 commentItem.className = 'highlight-export-comment-item';
                 
                 // 批注内容
-                const content = document.createElement('div');
+                const content = activeDocument.createElement('div');
                 content.className = 'highlight-export-comment-content';
                 content.textContent = comment.content;
                 commentItem.appendChild(content);
                 
                 // 批注时间
                 if (comment.createdAt) {
-                    const time = document.createElement('div');
+                    const time = activeDocument.createElement('div');
                     time.className = 'highlight-export-comment-time';
                     time.textContent = new Date(comment.createdAt).toLocaleString();
                     commentItem.appendChild(time);

@@ -39,7 +39,7 @@ export function registerHiNoteViewEvents(options: HiNoteViewEventBindingOptions)
         container.removeEventListener("highlight-multi-select", handleMultiSelect);
     });
 
-    component.registerDomEvent(document, "click", (e: MouseEvent) => {
+    component.registerDomEvent(activeDocument, "click", (e: MouseEvent) => {
         if (selectionManager.isInSelectionMode()) {
             return;
         }

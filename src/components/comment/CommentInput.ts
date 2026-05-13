@@ -62,7 +62,7 @@ export class CommentInput {
 
         if (didShow) {
             this.isOpen = true;
-            document.addEventListener('click', this.boundHandleOutsideClick);
+            activeDocument.addEventListener('click', this.boundHandleOutsideClick);
             this.options.onShown?.();
         }
     }
@@ -161,7 +161,7 @@ export class CommentInput {
         restoreOrRemoveCommentInput(this.getElements(), this.existingComment, editContext);
         
         // 清理事件监听器
-        document.removeEventListener('click', this.boundHandleOutsideClick);
+        activeDocument.removeEventListener('click', this.boundHandleOutsideClick);
         this.saveController.reset();
         
         // 调用取消回调
@@ -176,7 +176,7 @@ export class CommentInput {
         this.notifyClosed();
         
         // 清理事件监听器
-        document.removeEventListener('click', this.boundHandleOutsideClick);
+        activeDocument.removeEventListener('click', this.boundHandleOutsideClick);
         this.saveController.reset();
         
         removeCommentInputElements(this.getElements());
@@ -193,7 +193,7 @@ export class CommentInput {
             this.notifyClosed();
             
             // 清理事件监听器
-            document.removeEventListener('click', this.boundHandleOutsideClick);
+            activeDocument.removeEventListener('click', this.boundHandleOutsideClick);
             this.saveController.reset();
             
             removeCommentInputElements(this.getElements(), true);
@@ -214,7 +214,7 @@ export class CommentInput {
     private async handleDelete(): Promise<void> {
         if (!this.saveController.startProcessing()) return;
 
-        document.removeEventListener('click', this.boundHandleOutsideClick);
+        activeDocument.removeEventListener('click', this.boundHandleOutsideClick);
 
         try {
             await this.options.onDelete?.();
@@ -224,7 +224,7 @@ export class CommentInput {
             }, 0);
         } catch (error) {
             console.error('删除评论失败:', error);
-            document.addEventListener('click', this.boundHandleOutsideClick);
+            activeDocument.addEventListener('click', this.boundHandleOutsideClick);
             this.saveController.reset();
         }
     }

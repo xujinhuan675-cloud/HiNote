@@ -35,7 +35,7 @@ export function autoResizeCommentTextarea(textarea: HTMLTextAreaElement | undefi
     window.requestAnimationFrame(() => {
         if (!textarea) return;
 
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollTop = window.scrollY || activeDocument.documentElement.scrollTop;
 
         textarea.style.height = 'auto';
         textarea.style.height = `${textarea.scrollHeight}px`;
