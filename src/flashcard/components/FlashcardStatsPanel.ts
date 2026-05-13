@@ -130,15 +130,8 @@ export class FlashcardStatsPanel {
         }
         
         // 创建热力图单元格
-        const rows = 7; // 一周7天
-        const cols = 12; // 84天约12周
-        
-        // 设置网格样式
-        grid.setCssProps({
-            display: 'grid',
-            'grid-template-rows': `repeat(${rows}, 1fr)`,
-            'grid-template-columns': `repeat(${cols}, 1fr)`
-        });
+        const rows = 7;
+        const cols = 12;
         
         // 重新设计热力图布局，确保当天在正确位置
         // 先计算当天是周几（0是周日，1-6是周一到周六）

@@ -14,7 +14,6 @@ export class CommentInputManager {
     private onCommentSave: ((highlight: HighlightInfo, content: string, existingComment?: CommentItem) => Promise<void>) | null = null;
     private onCommentDelete: ((highlight: HighlightInfo, commentId: string) => Promise<void>) | null = null;
     private onCommentCancel: ((highlight: HighlightInfo) => Promise<void>) | null = null;
-    private onViewUpdate: (() => Promise<void>) | null = null;
     
     // 当前编辑状态
     private currentEditingHighlightId: string | undefined;
@@ -30,7 +29,6 @@ export class CommentInputManager {
         onCommentSave?: (highlight: HighlightInfo, content: string, existingComment?: CommentItem) => Promise<void>;
         onCommentDelete?: (highlight: HighlightInfo, commentId: string) => Promise<void>;
         onCommentCancel?: (highlight: HighlightInfo) => Promise<void>;
-        onViewUpdate?: () => Promise<void>;
     }) {
         if (callbacks.onCommentSave) {
             this.onCommentSave = callbacks.onCommentSave;
@@ -40,9 +38,6 @@ export class CommentInputManager {
         }
         if (callbacks.onCommentCancel) {
             this.onCommentCancel = callbacks.onCommentCancel;
-        }
-        if (callbacks.onViewUpdate) {
-            this.onViewUpdate = callbacks.onViewUpdate;
         }
     }
     
@@ -60,9 +55,6 @@ export class CommentInputManager {
             onSave: async (content: string) => {
                 if (this.onCommentSave) {
                     await this.onCommentSave(highlight, content, existingComment);
-                }
-                if (this.onViewUpdate) {
-                    await this.onViewUpdate();
                 }
             },
             onDelete: existingComment ? async () => {

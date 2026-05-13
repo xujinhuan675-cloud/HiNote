@@ -130,10 +130,7 @@ export class CommentWidgetHelper {
         const margin = this.TOOLTIP_MARGIN;
         const maxTooltipWidth = Math.max(160, viewportWidth - margin * 2);
 
-        tooltip.setCssProps({
-            position: 'fixed',
-            'max-width': `${Math.min(360, maxTooltipWidth)}px`
-        });
+        tooltip.addClass("hi-note-tooltip-positioned");
 
         const tooltipRect = tooltip.getBoundingClientRect();
         const tooltipWidth = tooltipRect.width || tooltip.offsetWidth;

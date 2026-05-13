@@ -7,7 +7,6 @@ import {
     calculateIndexProgress,
     calculateProgressPercent,
     calculateRetention,
-    findGroupByName,
     getCardsForProgress
 } from "./FlashcardProgressStats";
 

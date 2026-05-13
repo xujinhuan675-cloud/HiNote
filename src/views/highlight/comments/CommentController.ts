@@ -21,7 +21,8 @@ export class CommentController {
             onHighlightsUpdate: (highlights) => {
                 this.options.state.highlights = highlights;
             },
-            onCardUpdate: (highlight) => this.updateCard(highlight)
+            onCardUpdate: (highlight) => this.updateCard(highlight),
+            onCardRemove: (highlight) => this.removeCard(highlight)
         });
 
         this.options.commentInputManager.setCallbacks({
@@ -42,8 +43,7 @@ export class CommentController {
                     this.syncCommentServiceState();
                     await this.options.commentService.deleteVirtualHighlight(highlight);
                 }
-            },
-            onViewUpdate: async () => await this.options.updateHighlights()
+            }
         });
     }
 
@@ -73,6 +73,21 @@ export class CommentController {
         const cardInstance = defaultHighlightCardRegistry.findByHighlightId(highlight.id || '');
         if (cardInstance) {
             cardInstance.updateComments(highlight);
+        }
+    }
+
+    private removeCard(highlight: HighlightInfo): void {
+        this.options.state.highlights = this.options.state.highlights.filter(item => {
+            if (item.id && highlight.id) {
+                return item.id !== highlight.id;
+            }
+            return !(item.position === highlight.position && item.text === highlight.text);
+        });
+
+        const cardInstance = defaultHighlightCardRegistry.findByHighlightId(highlight.id || '');
+        if (cardInstance) {
+            cardInstance.getElement().remove();
+            cardInstance.destroy();
         }
     }
 }

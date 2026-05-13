@@ -24,6 +24,7 @@ export class CommentService {
     private onRefreshView: (() => Promise<void>) | null = null;
     private onHighlightsUpdate: ((highlights: HighlightInfo[]) => void) | null = null;
     private onCardUpdate: ((highlight: HighlightInfo) => void) | null = null;
+    private onCardRemove: ((highlight: HighlightInfo) => void) | null = null;
     
     // 当前状态
     private currentFile: TFile | null = null;
@@ -46,6 +47,7 @@ export class CommentService {
         onRefreshView?: () => Promise<void>;
         onHighlightsUpdate?: (highlights: HighlightInfo[]) => void;
         onCardUpdate?: (highlight: HighlightInfo) => void;
+        onCardRemove?: (highlight: HighlightInfo) => void;
     }) {
         if (callbacks.onRefreshView) {
             this.onRefreshView = callbacks.onRefreshView;
@@ -55,6 +57,9 @@ export class CommentService {
         }
         if (callbacks.onCardUpdate) {
             this.onCardUpdate = callbacks.onCardUpdate;
+        }
+        if (callbacks.onCardRemove) {
+            this.onCardRemove = callbacks.onCardRemove;
         }
     }
     
@@ -154,6 +159,7 @@ export class CommentService {
     async deleteComment(highlight: HighlightInfo, commentId: string): Promise<void> {
         const file = await this.getFileForHighlight(highlight);
         if (!file || !highlight.comments) return;
+        let removedHighlight = false;
 
         // 过滤掉要删除的批注
         highlight.comments = highlight.comments.filter(c => c.id !== commentId);
@@ -168,6 +174,7 @@ export class CommentService {
             if (highlight.isVirtual || !hasFlashcard) {
                 // 从 HighlightManager 中删除高亮
                 await this.highlightManager.removeHighlight(file, highlight);
+                removedHighlight = true;
                 
                 // 从当前高亮列表中移除
                 this.highlights = this.highlights.filter(h => {
@@ -193,7 +200,9 @@ export class CommentService {
         }
 
         // 只更新单个卡片，而不是刷新整个视图
-        if (this.onCardUpdate) {
+        if (removedHighlight && this.onCardRemove) {
+            this.onCardRemove(highlight);
+        } else if (this.onCardUpdate) {
             this.onCardUpdate(highlight);
         } else if (this.onRefreshView) {
             // 降级方案：如果没有 onCardUpdate，则刷新整个视图
@@ -225,9 +234,10 @@ export class CommentService {
             if (this.onHighlightsUpdate) {
                 this.onHighlightsUpdate(this.highlights);
             }
-            
-            // 刷新视图
-            if (this.onRefreshView) {
+
+            if (this.onCardRemove) {
+                this.onCardRemove(highlight);
+            } else if (this.onRefreshView) {
                 await this.onRefreshView();
             }
         }
