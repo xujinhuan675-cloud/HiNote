@@ -4,7 +4,7 @@ import { HighlightInfo as HiNote } from "../../types/highlight";
 import { CommentWidgetHelper } from "./CommentWidgetHelper";
 
 export class CommentWidget extends WidgetType {
-    private resizeListener: (() => void) | null = null;
+    private cleanupResizePositioning: (() => void) | null = null;
     
     // 常量定义
     private static readonly POSITION_MATCH_THRESHOLD = 30;
@@ -106,7 +106,7 @@ export class CommentWidget extends WidgetType {
         CommentWidgetHelper.setupClickEvent(button, tooltip, () => this.onClick());
 
         // CodeMirror Widget 有独立 destroy 生命周期，这里保留监听器引用便于卸载。
-        this.resizeListener = CommentWidgetHelper.registerResizePositioning(wrapper, tooltip);
+        this.cleanupResizePositioning = CommentWidgetHelper.registerResizePositioning(wrapper, tooltip);
     }
 
     /**
@@ -115,9 +115,9 @@ export class CommentWidget extends WidgetType {
      */
     destroy(dom: HTMLElement): void {
         // 移除 resize 监听器，防止内存泄漏
-        if (this.resizeListener) {
-            window.removeEventListener("resize", this.resizeListener);
-            this.resizeListener = null;
+        if (this.cleanupResizePositioning) {
+            this.cleanupResizePositioning();
+            this.cleanupResizePositioning = null;
         }
         
         CommentWidgetHelper.removeTooltipsForHighlight(this.highlight);

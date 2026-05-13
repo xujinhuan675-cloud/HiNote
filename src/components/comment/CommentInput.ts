@@ -13,6 +13,7 @@ export class CommentInput {
     private saveController: CommentInputSaveController;
     private boundHandleOutsideClick: (e: MouseEvent) => void;
     private commentEl: Element | null = null; // 保存批注元素引用，用于移除 editing 类
+    private isOpen = false;
 
     constructor(
         private card: HTMLElement,
@@ -41,23 +42,23 @@ export class CommentInput {
             onSave: this.options.onSave,
             onSaved: () => this.destroy()
         });
-        document.addEventListener('click', this.boundHandleOutsideClick);
-        
-        // 通知 HighlightCard 当前正在显示输入框
-        this.options.onShown?.();
     }
 
     public show() {
-        if (this.existingComment) {
-            this.showEditMode();
-        } else {
-            this.showCreateMode();
+        const didShow = this.existingComment
+            ? this.showEditMode()
+            : this.showCreateMode();
+
+        if (didShow) {
+            this.isOpen = true;
+            document.addEventListener('click', this.boundHandleOutsideClick);
+            this.options.onShown?.();
         }
     }
 
-    private showEditMode() {
+    private showEditMode(): boolean {
         const commentEl = this.card.querySelector(`[data-comment-id="${this.existingComment!.id}"]`);
-        if (!commentEl) return;
+        if (!commentEl) return false;
 
         // 保存引用，用于在 destroy 时移除 editing 类
         this.commentEl = commentEl;
@@ -66,7 +67,7 @@ export class CommentInput {
         commentEl.addClass('editing');
 
         const contentEl = commentEl.querySelector('.hi-note-content') as HTMLElement;
-        if (!contentEl) return;
+        if (!contentEl) return false;
 
         // 使用原始评论内容而不是渲染后的文本内容，这样可以保留 Markdown 符号
         const originalContent = this.existingComment?.content || '';
@@ -108,9 +109,11 @@ export class CommentInput {
             this.textarea.focus();
             this.textarea.setSelectionRange(this.textarea.value.length, this.textarea.value.length);
         }, 50);
+
+        return true;
     }
 
-    private showCreateMode() {
+    private showCreateMode(): boolean {
         const inputSection = document.createElement('div');
         inputSection.className = 'hi-note-input';
 
@@ -154,6 +157,8 @@ export class CommentInput {
         setTimeout(() => {
             this.textarea.focus();
         }, 50);
+
+        return true;
     }
 
     private setupKeyboardEvents(contentEl?: HTMLElement, footer?: Element) {
@@ -244,7 +249,7 @@ export class CommentInput {
      */
     private cancel(editContext?: { contentEl?: HTMLElement, footer?: Element } | null) {
         // 立即通知 HighlightCard 输入框已关闭，确保状态同步
-        this.options.onClosed?.();
+        this.notifyClosed();
         
         if (this.existingComment && editContext?.contentEl && editContext?.footer) {
             // 编辑模式：恢复原始内容
@@ -277,7 +282,7 @@ export class CommentInput {
      */
     public destroy() {
         // 立即通知 HighlightCard 输入框已关闭
-        this.options.onClosed?.();
+        this.notifyClosed();
         
         // 清理事件监听器
         document.removeEventListener('click', this.boundHandleOutsideClick);
@@ -307,7 +312,7 @@ export class CommentInput {
     public destroySafe() {
         try {
             // 立即通知 HighlightCard 输入框已关闭
-            this.options.onClosed?.();
+            this.notifyClosed();
             
             // 清理事件监听器
             document.removeEventListener('click', this.boundHandleOutsideClick);
@@ -358,5 +363,13 @@ export class CommentInput {
             this.saveController.reset();
         }
     }
-    
-} 
+
+    private notifyClosed(): void {
+        if (!this.isOpen) {
+            return;
+        }
+
+        this.isOpen = false;
+        this.options.onClosed?.();
+    }
+}

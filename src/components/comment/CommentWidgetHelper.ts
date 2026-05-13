@@ -166,7 +166,7 @@ export class CommentWidgetHelper {
     static registerResizePositioning(widget: HTMLElement, tooltip: HTMLElement): () => void {
         const resizeListener = () => this.updateTooltipPosition(widget, tooltip);
         window.addEventListener("resize", resizeListener);
-        return resizeListener;
+        return () => window.removeEventListener("resize", resizeListener);
     }
 
     /**
