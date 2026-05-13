@@ -298,7 +298,7 @@ export abstract class BaseAIServiceSettings implements AIServiceSettings {
         }
 
         if (modelState.selectedModel.isCustom) {
-            this.showStandardCustomModelInput(config, modelState, refs);
+            void this.showStandardCustomModelInput(config, modelState, refs);
         }
     }
 

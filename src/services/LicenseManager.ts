@@ -134,7 +134,7 @@ export class LicenseManager {
             }
 
             return false;
-        } catch (error) {
+        } catch {
 
             return false;
         }

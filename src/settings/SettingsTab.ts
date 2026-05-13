@@ -42,12 +42,9 @@ export class AISettingTab extends PluginSettingTab {
           cls: 'setting-tab-btn',
           attr: { role: 'button', tabindex: '0' }
         });
-        // 预留 Flashcard 标签按钮位置
-        let flashcardTab: HTMLElement | null = null;
         // 内容容器
         const generalContent = contentContainer.createEl('div', { cls: 'setting-tab-pane active' });
         const aiContent = contentContainer.createEl('div', { cls: 'setting-tab-pane' });
-        let flashcardContent: HTMLElement | null = null;
 
         // 添加标签切换事件
         const switchTab = (targetTab: HTMLElement, targetContent: HTMLElement) => {
@@ -66,14 +63,14 @@ export class AISettingTab extends PluginSettingTab {
         new AIServiceTab(this.plugin, aiContent).display();
 
         // HiCard 标签页始终显示
-        flashcardTab = tabContainer.createEl('div', {
+        const flashcardTab = tabContainer.createEl('div', {
             text: 'HiCard',
             cls: 'setting-tab-btn',
             attr: { role: 'button', tabindex: '0' }
         });
-        flashcardContent = contentContainer.createEl('div', { cls: 'setting-tab-pane' });
+        const flashcardContent = contentContainer.createEl('div', { cls: 'setting-tab-pane' });
         flashcardTab.onclick = () => {
-            void this.renderFlashcardTab(switchTab, flashcardTab!, flashcardContent!);
+            void this.renderFlashcardTab(switchTab, flashcardTab, flashcardContent);
         };
         // 默认加载 HiCard 内容（可选，首次加载时自动判断）
         // flashcardTab.onclick();
@@ -84,15 +81,15 @@ export class AISettingTab extends PluginSettingTab {
         flashcardTab: HTMLElement,
         flashcardContent: HTMLElement
     ): Promise<void> {
-            switchTab(flashcardTab!, flashcardContent!);
-            flashcardContent!.empty();
+            switchTab(flashcardTab, flashcardContent);
+            flashcardContent.empty();
             // 检查激活状态
             const isFlashcardActivated = await this.licenseManager.isActivated();
             if (isFlashcardActivated) {
-                new FlashcardSettingsTab(this.plugin, flashcardContent!).display();
+                new FlashcardSettingsTab(this.plugin, flashcardContent).display();
             } else {
                 // 显示激活输入框（结构更贴近主视图，含描述文案和 class）
-                const activationDiv = flashcardContent!.createEl('div', { cls: 'flashcard-activation-container' });
+                const activationDiv = flashcardContent.createEl('div', { cls: 'flashcard-activation-container' });
                 activationDiv.createEl('div', { cls: 'flashcard-activation-header', text: t('Activate HiCard') });
                 
                 // 创建包含链接的描述文案

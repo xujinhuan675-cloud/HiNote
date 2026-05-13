@@ -66,7 +66,7 @@ export function setupSearchAndSelection(options: SearchAndSelectionOptions): {
         containerEl
     );
     selectionManager.setOnSelectionChange((selectedCount) => {
-        batchOperationsHandler.showMultiSelectActions(selectedCount);
+        void batchOperationsHandler.showMultiSelectActions(selectedCount);
     });
     batchOperationsHandler.setCallbacks(
         () => selectionManager.getSelectedHighlights(),
