@@ -35,8 +35,8 @@ export class ExportManager {
         this.exportButton.setAttribute("aria-label", t("Export as notes"));
 
         // 添加导出按钮点击事件
-        this.exportButton.addEventListener("click", async () => {
-            await this.handleExportClick(getCurrentFile());
+        this.exportButton.addEventListener("click", () => {
+            void this.handleExportClick(getCurrentFile());
         });
 
         return this.exportButton;

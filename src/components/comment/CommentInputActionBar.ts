@@ -41,9 +41,9 @@ export class CommentInputActionBar {
             text: t("Submit")
         });
 
-        saveButton.addEventListener("click", async (e) => {
+        saveButton.addEventListener("click", (e) => {
             e.stopPropagation();
-            await this.options.onSave();
+            void this.options.onSave();
         });
     }
 
@@ -55,9 +55,9 @@ export class CommentInputActionBar {
             text: t("Delete comment")
         });
 
-        deleteLink.addEventListener("click", async (e) => {
+        deleteLink.addEventListener("click", (e) => {
             e.stopPropagation();
-            await this.options.onDelete?.();
+            void this.options.onDelete?.();
         });
     }
 }

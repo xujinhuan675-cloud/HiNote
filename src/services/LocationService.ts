@@ -54,7 +54,7 @@ export class LocationService {
      */
     private async locateAndHighlightText(leaf: WorkspaceLeaf, text: string, position?: number) {
         // 确保编辑器已准备就绪
-        await new Promise(resolve => setTimeout(resolve, 300));
+        await new Promise(resolve => window.setTimeout(resolve, 300));
         
         const markdownView = leaf.view as MarkdownView;
         const editor = markdownView.editor;

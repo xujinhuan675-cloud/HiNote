@@ -1,5 +1,3 @@
-import { createHash } from 'crypto';
-
 /**
  * 文件路径处理工具类
  */
@@ -36,7 +34,12 @@ export class FilePathUtils {
      * @returns MD5哈希值
      */
     static generateHash(filePath: string): string {
-        return createHash('md5').update(filePath).digest('hex');
+        let hash = 0;
+        for (let i = 0; i < filePath.length; i++) {
+            hash = ((hash << 5) - hash) + filePath.charCodeAt(i);
+            hash |= 0;
+        }
+        return Math.abs(hash).toString(16);
     }
 
     /**

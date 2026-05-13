@@ -201,26 +201,30 @@ export class BatchOperationsHandler {
         setIcon(createButton, 'book-plus');
         
         // 检查许可证状态
-        this.licenseManager.isActivated().then(isActivated => {
+        void this.licenseManager.isActivated().then(isActivated => {
             if (isActivated) {
-                this.licenseManager.isFeatureEnabled('flashcard').then(isEnabled => {
+                return this.licenseManager.isFeatureEnabled('flashcard').then(isEnabled => {
                     if (!isEnabled) {
                         createButton.addClass('disabled-button');
                         createButton.setAttribute('aria-label', t('Only HiNote Pro'));
                     }
                 });
-            } else {
-                createButton.addClass('disabled-button');
-                createButton.setAttribute('aria-label', t('Only HiNote Pro'));
             }
+
+            createButton.addClass('disabled-button');
+            createButton.setAttribute('aria-label', t('Only HiNote Pro'));
+        }).catch(error => {
+            console.error('[HiNote] Failed to check flashcard license:', error);
+            createButton.addClass('disabled-button');
+            createButton.setAttribute('aria-label', t('Only HiNote Pro'));
         });
-        
-        createButton.addEventListener('click', async () => {
+
+        createButton.addEventListener('click', () => {
             if (createButton.hasClass('disabled-button')) {
                 new Notice(t('Only HiNote Pro'));
                 return;
             }
-            await this.flashcardOperations?.createMissingFlashcards();
+            void this.flashcardOperations?.createMissingFlashcards();
         });
     }
     

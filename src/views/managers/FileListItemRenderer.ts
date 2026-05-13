@@ -161,10 +161,10 @@ export class FileListItemRenderer {
     }
 
     private addPagePreview(element: HTMLElement, file: TFile): void {
-        let hoverTimeout: NodeJS.Timeout;
+        let hoverTimeout: number | undefined;
 
         element.addEventListener("mouseenter", (event) => {
-            hoverTimeout = setTimeout(async () => {
+            hoverTimeout = window.setTimeout(() => {
                 const target = event.target as HTMLElement;
 
                 this.options.plugin.app.workspace.trigger("hover-link", {
@@ -179,7 +179,7 @@ export class FileListItemRenderer {
 
         element.addEventListener("mouseleave", () => {
             if (hoverTimeout) {
-                clearTimeout(hoverTimeout);
+                window.clearTimeout(hoverTimeout);
             }
         });
     }

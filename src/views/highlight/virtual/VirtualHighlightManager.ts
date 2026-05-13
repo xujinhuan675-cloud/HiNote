@@ -40,8 +40,8 @@ export class VirtualHighlightManager {
         this.addCommentButton.setAttribute("aria-label", t("Add File Comment"));
 
         // 添加文件评论按钮点击事件
-        this.addCommentButton.addEventListener("click", async () => {
-            await this.handleAddFileComment(callbacks);
+        this.addCommentButton.addEventListener("click", () => {
+            void this.handleAddFileComment(callbacks);
         });
 
         return this.addCommentButton;
@@ -89,7 +89,7 @@ export class VirtualHighlightManager {
         callbacks.onVirtualHighlightCreated(virtualHighlight);
 
         // 找到新创建的高亮卡片并自动打开评论输入框
-        setTimeout(() => {
+        window.setTimeout(() => {
             const highlightContainer = callbacks.getHighlightContainer();
             const highlightCard = highlightContainer.querySelector('.highlight-card') as HTMLElement;
             if (highlightCard) {

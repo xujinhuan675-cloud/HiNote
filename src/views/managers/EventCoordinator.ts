@@ -200,7 +200,7 @@ export class EventCoordinator {
         onShowCommentInput: (card: HTMLElement, highlight: HiNote) => void
     ): void {
         // 等待一下确保视图已经更新
-        setTimeout(() => {
+        window.setTimeout(() => {
             // 移除所有卡片的选中状态
             highlightContainer.querySelectorAll('.highlight-card').forEach(card => {
                 card.removeClass('selected');

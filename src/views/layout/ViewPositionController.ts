@@ -71,7 +71,7 @@ export class ViewPositionController {
             if (wasInAllHighlightsView) {
                 this.options.highlightContainer.empty();
                 this.options.highlightContainer.appendChild(this.options.loadingIndicator);
-                setTimeout(() => {
+                window.setTimeout(() => {
                     this.options.updateHighlights();
                 }, this.options.canvasUpdateDelay);
             } else {

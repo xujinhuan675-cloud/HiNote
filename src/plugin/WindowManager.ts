@@ -109,7 +109,7 @@ export class WindowManager {
             });
             
             // 将新创建的视图标记为主窗口模式
-            setTimeout(() => {
+            window.setTimeout(() => {
                 const view = leaf.view;
                 if (view && view instanceof HiNoteView) {
                     void this.updateViewToMainMode(view);

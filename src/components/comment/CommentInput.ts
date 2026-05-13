@@ -82,7 +82,7 @@ export class CommentInput {
         this.setupKeyboardEvents(renderedInput.editContext);
 
         // 延迟一下再聚焦，确保DOM已经完全渲染
-        setTimeout(() => {
+        window.setTimeout(() => {
             this.textarea.focus();
             this.textarea.setSelectionRange(this.textarea.value.length, this.textarea.value.length);
         }, 50);
@@ -101,7 +101,7 @@ export class CommentInput {
         this.setupKeyboardEvents(renderedInput.editContext);
         
         // 延迟一下再聚焦，确保DOM已经完全渲染
-        setTimeout(() => {
+        window.setTimeout(() => {
             this.textarea.focus();
         }, 50);
 
@@ -219,7 +219,7 @@ export class CommentInput {
         try {
             await this.options.onDelete?.();
 
-            setTimeout(() => {
+            window.setTimeout(() => {
                 this.destroySafe();
             }, 0);
         } catch (error) {

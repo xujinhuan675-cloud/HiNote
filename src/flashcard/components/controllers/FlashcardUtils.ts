@@ -19,11 +19,11 @@ export class FlashcardUtils {
     public addPagePreview(element: HTMLElement, filePath: string | undefined) {
         if (!filePath) return;
         
-        let hoverTimeout: NodeJS.Timeout;
+        let hoverTimeout: number | undefined;
         
         // 添加悬停事件
         element.addEventListener("mouseenter", (event) => {
-            hoverTimeout = setTimeout(() => {
+            hoverTimeout = window.setTimeout(() => {
                 const target = event.target as HTMLElement;
                 
                 // 触发 Obsidian 的页面预览事件
@@ -40,7 +40,7 @@ export class FlashcardUtils {
         // 添加鼠标离开事件
         element.addEventListener("mouseleave", () => {
             if (hoverTimeout) {
-                clearTimeout(hoverTimeout);
+                window.clearTimeout(hoverTimeout);
             }
         });
     }

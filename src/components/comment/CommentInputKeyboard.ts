@@ -32,7 +32,7 @@ export function setupCommentInputKeyboard(
 export function autoResizeCommentTextarea(textarea: HTMLTextAreaElement | undefined): void {
     if (!textarea) return;
 
-    requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
         if (!textarea) return;
 
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;

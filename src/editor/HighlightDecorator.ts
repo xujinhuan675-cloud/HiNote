@@ -63,7 +63,7 @@ export class HighlightDecorator {
 
     enable() {
         this.plugin.registerMarkdownPostProcessor((element, context) => {
-            this.previewRenderer.processPreview(element, context);
+            void this.previewRenderer.processPreview(element, context);
         });
 
         this.registerRefreshEvents();
@@ -106,6 +106,6 @@ export class HighlightDecorator {
         }
 
         // 移除所有高亮评论按钮
-        document.querySelectorAll('.hi-note-widget').forEach(el => el.remove());
+        activeDocument.querySelectorAll('.hi-note-widget').forEach(el => el.remove());
     }
 }

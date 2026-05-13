@@ -139,31 +139,39 @@ export class HighlightMatcher {
         updates: StoredHighlightUpdate[]
     ): void {
         // 使用 setTimeout 异步执行，不阻塞合并流程
-        setTimeout(async () => {
-            try {
-                const updateMap = new Map(updates.map(u => [u.id, u.patch]));
-                let changed = false;
-                
-                for (const comment of storedComments) {
-                    if (comment.id && updateMap.has(comment.id)) {
-                        Object.assign(comment, updateMap.get(comment.id)!);
-                        comment.updatedAt = Date.now();
-                        changed = true;
-                    }
-                }
-                
-                if (changed) {
-                    const highlightRepository = this.getHighlightRepository?.();
-                    if (highlightRepository) {
-                        await highlightRepository.saveFileHighlights(filePath, storedComments);
-                    }
-                }
-            } catch (error) {
-                // 静默处理，定位锚点更新失败不影响主流程
-            }
+        window.setTimeout(() => {
+            void this.saveStoredHighlightUpdates(filePath, storedComments, updates);
         }, 100);
     }
-    
+
+    private async saveStoredHighlightUpdates(
+        filePath: string,
+        storedComments: HiNote[],
+        updates: StoredHighlightUpdate[]
+    ): Promise<void> {
+        try {
+            const updateMap = new Map(updates.map(u => [u.id, u.patch]));
+            let changed = false;
+
+            for (const comment of storedComments) {
+                if (comment.id && updateMap.has(comment.id)) {
+                    Object.assign(comment, updateMap.get(comment.id)!);
+                    comment.updatedAt = Date.now();
+                    changed = true;
+                }
+            }
+
+            if (changed) {
+                const highlightRepository = this.getHighlightRepository?.();
+                if (highlightRepository) {
+                    await highlightRepository.saveFileHighlights(filePath, storedComments);
+                }
+            }
+        } catch (error) {
+            // 静默处理，定位锚点更新失败不影响主流程
+        }
+    }
+
     /**
      * 创建合并后的高亮信息
      */

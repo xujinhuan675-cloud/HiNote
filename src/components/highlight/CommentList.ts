@@ -107,7 +107,7 @@ export class CommentList extends Component {
             });
 
             // 检查内容高度并添加展开/收起按钮（在下一帧执行，确保内容已渲染）
-            requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => {
                 this.checkAndAddToggleButton(contentWrapper, contentEl, comment);
             });
 

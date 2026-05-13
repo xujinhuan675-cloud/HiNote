@@ -184,7 +184,7 @@ export class HighlightRenderManager {
         
         // 如果高亮已经创建了闪卡，立即更新UI状态
         if (highlight.id && this.highlightsWithFlashcards.has(highlight.id)) {
-            setTimeout(() => {
+            window.setTimeout(() => {
                 if (highlight.id) {
                     defaultHighlightCardRegistry.updateCardUIByHighlightId(highlight.id);
                 }

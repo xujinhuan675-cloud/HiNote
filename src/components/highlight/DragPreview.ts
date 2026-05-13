@@ -18,11 +18,11 @@ export class DragPreview {
 
         this.clear();
 
-        this.instance = document.createElement('div');
+        this.instance = activeDocument.createElement('div');
         this.instance.className = 'highlight-dragging';
 
         // 创建内容容器
-        const content = document.createElement('div');
+        const content = activeDocument.createElement('div');
         content.className = 'highlight-dragging-content';
         
         // 限制预览文本长度
@@ -30,7 +30,7 @@ export class DragPreview {
         content.textContent = previewText;
         
         this.instance.appendChild(content);
-        document.body.appendChild(this.instance);
+        activeDocument.body.appendChild(this.instance);
 
         // 设置初始位置
         this.updatePosition(e.clientX, e.clientY);
@@ -39,7 +39,7 @@ export class DragPreview {
         e.dataTransfer?.setDragImage(this.dragImage, 0, 0);
 
         // 添加移动监听
-        document.addEventListener('dragover', this.handleDragOver);
+        activeDocument.addEventListener('dragover', this.handleDragOver);
     }
 
     private static handleDragOver = (e: DragEvent) => {
@@ -58,6 +58,6 @@ export class DragPreview {
             this.instance.remove();
             this.instance = null;
         }
-        document.removeEventListener('dragover', this.handleDragOver);
+        activeDocument.removeEventListener('dragover', this.handleDragOver);
     }
 } 

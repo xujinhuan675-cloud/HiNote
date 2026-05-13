@@ -101,7 +101,7 @@ export class SearchUIHelper {
         
         // 失去焦点时清理
         const handleBlur = () => {
-            setTimeout(() => {
+            window.setTimeout(() => {
                 if (!document.activeElement || 
                     (document.activeElement !== this.searchInput && 
                      !hintsContainer.contains(document.activeElement as Node))) {

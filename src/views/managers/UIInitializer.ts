@@ -146,9 +146,10 @@ export class UIInitializer {
         const indicator = parent.createEl("div", {
             cls: "highlight-search-loading"
         });
-        
-        indicator.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="loading-spinner"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>`;
-        indicator.style.display = "none";
+
+        const icon = indicator.createSpan({ cls: "loading-spinner" });
+        setIcon(icon, "loader-circle");
+        indicator.addClass("highlight-display-none");
 
         return indicator;
     }

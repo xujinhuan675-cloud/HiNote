@@ -140,7 +140,7 @@ export class ExportPreviewModal extends Modal {
                         clonedDoc.head.appendChild(style);
                         
                         // 给样式应用一个短暂的延时，确保样式完全加载
-                        await new Promise(resolve => setTimeout(resolve, 100));
+                        await new Promise(resolve => window.setTimeout(resolve, 100));
                     }
                 });
 

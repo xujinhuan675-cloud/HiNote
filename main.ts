@@ -63,10 +63,10 @@ export default class CommentPlugin extends Plugin {
 	}
 
 
-	async onunload() {
+	onunload() {
 		// 清理初始化管理器
 		if (this.initManager) {
-			await this.initManager.cleanup();
+			void this.initManager.cleanup();
 		}
 	}
 

@@ -50,8 +50,8 @@ export class SelectionBoxController {
         this.selectionStartY = e.clientY;
         this.mouseMoved = false;
 
-        document.addEventListener("mousemove", this.handleMouseMove);
-        document.addEventListener("mouseup", this.handleMouseUp);
+        activeDocument.addEventListener("mousemove", this.handleMouseMove);
+        activeDocument.addEventListener("mouseup", this.handleMouseUp);
     };
 
     private handleMouseMove = (e: MouseEvent) => {
@@ -61,7 +61,7 @@ export class SelectionBoxController {
 
         if (distance >= this.mouseMoveThreshold) {
             this.mouseMoved = true;
-            document.removeEventListener("mousemove", this.handleMouseMove);
+            activeDocument.removeEventListener("mousemove", this.handleMouseMove);
             this.startSelection(e);
         }
     };
@@ -78,16 +78,16 @@ export class SelectionBoxController {
         this.cleanupMouseEvents();
         this.options.clearSelection();
 
-        this.selectionBox = document.createElement("div");
+        this.selectionBox = activeDocument.createElement("div");
         this.selectionBox.className = "selection-box";
         this.selectionBox.style.left = `${this.selectionStartX}px`;
         this.selectionBox.style.top = `${this.selectionStartY}px`;
-        document.body.appendChild(this.selectionBox);
+        activeDocument.body.appendChild(this.selectionBox);
 
         this.selectionMode = true;
 
-        document.addEventListener("mousemove", this.handleSelectionMove);
-        document.addEventListener("mouseup", this.handleSelectionEnd);
+        activeDocument.addEventListener("mousemove", this.handleSelectionMove);
+        activeDocument.addEventListener("mouseup", this.handleSelectionEnd);
     }
 
     private handleSelectionMove = (e: MouseEvent) => {
@@ -141,19 +141,19 @@ export class SelectionBoxController {
 
             if (overlap) {
                 card.addClass("selected");
-            } else if (!document.querySelector(".multi-select-mode")) {
+            } else if (!activeDocument.querySelector(".multi-select-mode")) {
                 card.removeClass("selected");
             }
         });
     }
 
     private cleanupMouseEvents(): void {
-        document.removeEventListener("mousemove", this.handleMouseMove);
-        document.removeEventListener("mouseup", this.handleMouseUp);
+        activeDocument.removeEventListener("mousemove", this.handleMouseMove);
+        activeDocument.removeEventListener("mouseup", this.handleMouseUp);
     }
 
     private cleanupSelectionEvents(): void {
-        document.removeEventListener("mousemove", this.handleSelectionMove);
-        document.removeEventListener("mouseup", this.handleSelectionEnd);
+        activeDocument.removeEventListener("mousemove", this.handleSelectionMove);
+        activeDocument.removeEventListener("mouseup", this.handleSelectionEnd);
     }
 }

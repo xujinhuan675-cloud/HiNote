@@ -84,9 +84,9 @@ export class BatchFlashcardOperations {
             cls: "mod-warning",
             text: t("Delete")
         });
-        confirmButton.addEventListener("click", async () => {
+        confirmButton.addEventListener("click", () => {
             modal.close();
-            await this.deleteExistingFlashcards();
+            void this.deleteExistingFlashcards();
         });
 
         modal.open();

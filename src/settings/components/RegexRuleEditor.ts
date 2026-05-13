@@ -1,4 +1,4 @@
-import { Setting, ButtonComponent, TextComponent, ToggleComponent, setIcon } from 'obsidian';
+import { TextComponent, ToggleComponent, setIcon } from 'obsidian';
 import type { RegexRule } from '../../types/highlight';
 import { t } from '../../i18n';
 import type CommentPlugin from '../../../main';
@@ -33,7 +33,7 @@ export class RegexRuleEditor {
     
     // 添加警告提示和示例
     const warningEl = this.rulesContainer.createDiv({ cls: 'regex-rule-warning' });
-    warningEl.innerHTML = t('Use regex with caution. If there are capture groups (), the first capture group will be used as the highlight text; if there are no capture groups, the entire match will be used.')
+    warningEl.setText(t('Use regex with caution. If there are capture groups (), the first capture group will be used as the highlight text; if there are no capture groups, the entire match will be used.'));
     
     // 显示现有规则
     if (this.rules.length === 0) {
@@ -63,7 +63,7 @@ export class RegexRuleEditor {
       };
       
       this.rules.push(newRule);
-      this.saveRules();
+      void this.saveRules();
       this.display(); // 重新渲染整个列表
     });
   }
@@ -82,7 +82,7 @@ export class RegexRuleEditor {
     nameInput.setValue(rule.name);
     nameInput.onChange(value => {
       rule.name = value;
-      this.saveRules();
+      void this.saveRules();
     });
     
     // 正则表达式输入框
@@ -91,7 +91,7 @@ export class RegexRuleEditor {
     patternInput.setValue(rule.pattern);
     patternInput.onChange(value => {
       rule.pattern = value;
-      this.saveRules();
+      void this.saveRules();
     });
     
     // 颜色文本输入框
@@ -105,7 +105,7 @@ export class RegexRuleEditor {
       const colorValue = value.trim();
       if (colorValue && (colorValue.startsWith('#') || colorValue.startsWith('rgb') || colorValue.startsWith('rgba'))) {
         rule.color = colorValue;
-        this.saveRules();
+        void this.saveRules();
       }
     });
     
@@ -115,7 +115,7 @@ export class RegexRuleEditor {
     deleteContainer.setAttr('aria-label', t('Delete rule'));
     deleteContainer.addEventListener('click', () => {
       this.rules.splice(index, 1);
-      this.saveRules();
+      void this.saveRules();
       this.display(); // 重新渲染整个列表
     });
     
@@ -124,7 +124,7 @@ export class RegexRuleEditor {
     toggle.setValue(rule.enabled);
     toggle.onChange(value => {
       rule.enabled = value;
-      this.saveRules();
+      void this.saveRules();
     });
     // 为开关添加类名，便于CSS选择器定位
     toggle.toggleEl.addClass('regex-rule-toggle');

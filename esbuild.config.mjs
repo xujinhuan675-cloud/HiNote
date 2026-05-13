@@ -1,6 +1,6 @@
 import esbuild from "esbuild";
 import process from "process";
-import builtins from "builtin-modules";
+import { builtinModules } from "node:module";
 
 const banner =
 `/*
@@ -28,10 +28,11 @@ const context = await esbuild.context({
 		"@codemirror/search",
 		"@codemirror/state",
 		"@codemirror/view",
-		"@lezer/common",
-		"@lezer/highlight",
-		"@lezer/lr",
-		...builtins],
+			"@lezer/common",
+			"@lezer/highlight",
+			"@lezer/lr",
+			...builtinModules
+		],
 	format: "cjs",
 	target: "es2018",
 	logLevel: "info",

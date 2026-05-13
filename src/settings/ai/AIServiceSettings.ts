@@ -204,7 +204,7 @@ export abstract class BaseAIServiceSettings implements AIServiceSettings {
      * 延迟后恢复按钮为默认状态
      */
     protected resetButtonAfterDelay(buttonEl: HTMLButtonElement, text: string, delayMs: number): void {
-        setTimeout(() => {
+        window.setTimeout(() => {
             buttonEl.empty();
             buttonEl.textContent = text;
             buttonEl.disabled = false;

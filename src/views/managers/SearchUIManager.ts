@@ -105,8 +105,8 @@ export class SearchUIManager {
         }
         
         // 设置防抖定时器
-        this.searchDebounceTimer = window.setTimeout(async () => {
-            await this.performSearch();
+        this.searchDebounceTimer = window.setTimeout(() => {
+            void this.performSearch();
             this.searchDebounceTimer = null;
         }, debounceTime);
     };
@@ -148,7 +148,8 @@ export class SearchUIManager {
     private showSearchLoadingIndicator(): void {
         if (!this.isSearching) {
             this.isSearching = true;
-            this.searchLoadingIndicator.style.display = "flex";
+            this.searchLoadingIndicator.removeClass("highlight-display-none");
+            this.searchLoadingIndicator.addClass("highlight-display-flex");
         }
     }
     
@@ -158,7 +159,8 @@ export class SearchUIManager {
     private hideSearchLoadingIndicator(): void {
         if (this.isSearching) {
             this.isSearching = false;
-            this.searchLoadingIndicator.style.display = "none";
+            this.searchLoadingIndicator.removeClass("highlight-display-flex");
+            this.searchLoadingIndicator.addClass("highlight-display-none");
         }
     }
     

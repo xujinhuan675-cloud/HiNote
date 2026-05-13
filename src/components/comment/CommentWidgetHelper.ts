@@ -44,7 +44,7 @@ export class CommentWidgetHelper {
      * 创建工具提示
      */
     static createTooltip(app: App, highlight: HiNote): HTMLElement {
-        const tooltip = document.createElement("div");
+        const tooltip = activeDocument.createElement("div");
         tooltip.addClass("hi-note-tooltip", "hi-note-tooltip-hidden");
         if (highlight.id) {
             tooltip.setAttribute("data-highlight-id", highlight.id);
@@ -57,7 +57,7 @@ export class CommentWidgetHelper {
         // 渲染评论内容
         this.renderTooltipContent(app, commentsList, tooltip, highlight.comments || []);
 
-        document.body.appendChild(tooltip);
+        activeDocument.body.appendChild(tooltip);
         
         return tooltip;
     }
@@ -207,7 +207,7 @@ export class CommentWidgetHelper {
 
         if (existing.length) {
             workspace.revealLeaf(existing[0]);
-            await new Promise(resolve => setTimeout(resolve, 50));
+            await new Promise(resolve => window.setTimeout(resolve, 50));
         } else {
             const leaf = workspace.getRightLeaf(false);
             if (leaf) {
@@ -215,7 +215,7 @@ export class CommentWidgetHelper {
                     type: "hinote-view",
                     active: true
                 });
-                await new Promise(resolve => setTimeout(resolve, 200));
+                await new Promise(resolve => window.setTimeout(resolve, 200));
             }
         }
         
@@ -230,11 +230,13 @@ export class CommentWidgetHelper {
         tooltip: HTMLElement,
         onClick: () => void | Promise<void>
     ): void {
-        button.addEventListener("click", async (e) => {
+        button.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
             tooltip.addClass("hi-note-tooltip-hidden");
-            await onClick();
+            void Promise.resolve(onClick()).catch(error => {
+                console.error('[HiNote] Error handling comment widget click:', error);
+            });
         });
     }
 
@@ -266,7 +268,7 @@ export class CommentWidgetHelper {
     static removeTooltipsForHighlight(highlight: HiNote): void {
         if (!highlight.id) return;
 
-        document.querySelectorAll(".hi-note-tooltip").forEach(tooltip => {
+        activeDocument.querySelectorAll(".hi-note-tooltip").forEach(tooltip => {
             if (tooltip.getAttribute("data-highlight-id") === highlight.id) {
                 tooltip.remove();
             }
