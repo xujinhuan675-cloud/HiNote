@@ -1,9 +1,20 @@
 import { CommentItem, HighlightInfo } from "../../types/highlight";
-import { Platform } from "obsidian";
 import type CommentPlugin from "../../../main";
 import { InlineAICommentHandler } from "./InlineAICommentHandler";
 import { CommentInputSaveController } from "./CommentInputSaveController";
-import { CommentInputActionBar } from "./CommentInputActionBar";
+import {
+    CommentInputEditContext,
+    renderCreateCommentInput,
+    renderEditCommentInput
+} from "./CommentInputView";
+import {
+    removeCommentInputElements,
+    restoreOrRemoveCommentInput
+} from "./CommentInputCleanup";
+import {
+    autoResizeCommentTextarea,
+    setupCommentInputKeyboard
+} from "./CommentInputKeyboard";
 
 export class CommentInput {
     private textarea: HTMLTextAreaElement;
@@ -57,52 +68,18 @@ export class CommentInput {
     }
 
     private showEditMode(): boolean {
-        const commentEl = this.card.querySelector(`[data-comment-id="${this.existingComment!.id}"]`);
-        if (!commentEl) return false;
-
-        // 保存引用，用于在 destroy 时移除 editing 类
-        this.commentEl = commentEl;
-
-        // 添加编辑状态类，用于隐藏展开/收起按钮
-        commentEl.addClass('editing');
-
-        const contentEl = commentEl.querySelector('.hi-note-content') as HTMLElement;
-        if (!contentEl) return false;
-
-        // 使用原始评论内容而不是渲染后的文本内容，这样可以保留 Markdown 符号
-        const originalContent = this.existingComment?.content || '';
-
-        // 创建编辑框
-        this.textarea = document.createElement('textarea');
-        this.textarea.value = originalContent;
-        this.textarea.className = 'hi-note-input';
-        this.textarea.style.minHeight = `${contentEl.offsetHeight}px`;
-
-        // 添加输入事件监听器
-        this.textarea.addEventListener('input', () => {
-            this.autoResizeTextarea();
-        });
-        
-        // 阻止文本框的点击事件冒泡
-        this.textarea.addEventListener('click', (e) => {
-            e.stopPropagation();
-        });
-
-        // 替换内容为编辑框
-        contentEl.replaceWith(this.textarea);
-
-        // 隐藏底部的时间和按钮
-        const footer = commentEl.querySelector('.hi-note-footer');
-        if (footer) {
-            footer.addClass('hi-note-hidden');
-        }
-
-        this.actionHint = new CommentInputActionBar(commentEl as HTMLElement, {
+        const renderedInput = renderEditCommentInput(this.card, this.existingComment!, {
+            onInput: () => this.autoResizeTextarea(),
             onSave: async () => await this.handleSave(),
             onDelete: this.options.onDelete ? async () => await this.handleDelete() : undefined
-        }).render();
+        });
 
-        this.setupKeyboardEvents(contentEl, footer || undefined);
+        if (!renderedInput) return false;
+
+        this.textarea = renderedInput.textarea;
+        this.actionHint = renderedInput.actionHint;
+        this.commentEl = renderedInput.commentEl || null;
+        this.setupKeyboardEvents(renderedInput.editContext);
 
         // 延迟一下再聚焦，确保DOM已经完全渲染
         setTimeout(() => {
@@ -114,44 +91,14 @@ export class CommentInput {
     }
 
     private showCreateMode(): boolean {
-        const inputSection = document.createElement('div');
-        inputSection.className = 'hi-note-input';
-
-        // 创建文本框
-        this.textarea = inputSection.createEl("textarea");
-        
-        // 添加输入事件监听器
-        this.textarea.addEventListener('input', () => {
-            this.autoResizeTextarea();
-        });
-        
-        // 阻止点击事件冒泡，防止触发高亮卡片的点击事件
-        inputSection.addEventListener('click', (e) => {
-            e.stopPropagation();
-        });
-
-        // 添加到评论区域
-        let commentsSection = this.card.querySelector('.hi-notes-section');
-        if (!commentsSection) {
-            commentsSection = this.card.createEl('div', {
-                cls: 'hi-notes-section'
-            });
-            
-            commentsSection.createEl('div', {
-                cls: 'hi-notes-list'
-            });
-        }
-
-        const commentsList = commentsSection.querySelector('.hi-notes-list');
-        if (commentsList) {
-            commentsList.insertBefore(inputSection, commentsList.firstChild);
-        }
-
-        this.actionHint = new CommentInputActionBar(inputSection, {
+        const renderedInput = renderCreateCommentInput(this.card, {
+            onInput: () => this.autoResizeTextarea(),
             onSave: async () => await this.handleSave()
-        }).render();
+        });
 
-        this.setupKeyboardEvents();
+        this.textarea = renderedInput.textarea;
+        this.actionHint = renderedInput.actionHint;
+        this.setupKeyboardEvents(renderedInput.editContext);
         
         // 延迟一下再聚焦，确保DOM已经完全渲染
         setTimeout(() => {
@@ -161,61 +108,22 @@ export class CommentInput {
         return true;
     }
 
-    private setupKeyboardEvents(contentEl?: HTMLElement, footer?: Element) {
-        // 保存编辑模式的上下文，用于取消时恢复
-        const editContext = this.existingComment ? { contentEl, footer } : null;
-        
+    private setupKeyboardEvents(editContext?: CommentInputEditContext | null) {
         this.cancelEdit = () => {
             this.cancel(editContext);
         };
 
-        this.textarea.onkeydown = async (e: KeyboardEvent) => {
-            // Tab键触发AI内联生成
-            if (e.key === 'Tab') {
-                e.preventDefault();
-                await this.inlineAI.generate();
-                return;
-            }
-            
-            // 移动端上 Enter 键为换行，非移动端上 Enter 键为保存
-            if (e.key === 'Enter') {
-                if (Platform.isMobile) {
-                    // 移动端上不拦截 Enter 键，允许正常换行
-                    return;
-                } else if (e.shiftKey) {
-                    // 非移动端上保持 Shift+Enter 换行功能
-                    return;
-                }
-                
-                // 非移动端上 Enter 键为保存
-                e.preventDefault();
-                
+        setupCommentInputKeyboard(this.textarea, {
+            onInlineAI: async () => await this.inlineAI.generate(),
+            onSave: async () => {
                 await this.saveController.saveCurrentContent();
             }
-        };
+        });
     }
 
     // 自动调整文本框高度以适应内容
     private autoResizeTextarea() {
-        if (!this.textarea) return;
-        
-        // 使用 requestAnimationFrame 批处理 DOM 操作，减少强制重排
-        requestAnimationFrame(() => {
-            if (!this.textarea) return;
-            
-            // 保存当前滚动位置
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            
-            // 重置高度，以便能够准确计算内容高度
-            this.textarea.style.height = 'auto';
-            
-            // 设置新高度 (内容高度 + 边距)
-            const newHeight = this.textarea.scrollHeight;
-            this.textarea.style.height = `${newHeight}px`;
-            
-            // 恢复滚动位置，避免页面跳动
-            window.scrollTo(0, scrollTop);
-        });
+        autoResizeCommentTextarea(this.textarea);
     }
 
 
@@ -250,24 +158,7 @@ export class CommentInput {
     private cancel(editContext?: { contentEl?: HTMLElement, footer?: Element } | null) {
         // 立即通知 HighlightCard 输入框已关闭，确保状态同步
         this.notifyClosed();
-        
-        if (this.existingComment && editContext?.contentEl && editContext?.footer) {
-            // 编辑模式：恢复原始内容
-            this.textarea.replaceWith(editContext.contentEl);
-            this.actionHint.remove();
-            editContext.footer.removeClass('hi-note-hidden');
-        } else {
-            // 创建模式：移除整个输入框容器
-            const inputContainer = this.textarea.closest('.hi-note-input');
-            if (inputContainer) {
-                inputContainer.remove();
-            }
-            
-            // 如果没有其他评论，移除评论区域
-            if (!this.card.querySelector('.hi-note')) {
-                this.card.querySelector('.hi-notes-section')?.remove();
-            }
-        }
+        restoreOrRemoveCommentInput(this.getElements(), this.existingComment, editContext);
         
         // 清理事件监听器
         document.removeEventListener('click', this.boundHandleOutsideClick);
@@ -288,21 +179,8 @@ export class CommentInput {
         document.removeEventListener('click', this.boundHandleOutsideClick);
         this.saveController.reset();
         
-        // 移除 textarea
-        if (this.textarea && this.textarea.parentElement) {
-            this.textarea.remove();
-        }
-        
-        // 移除 actionHint
-        if (this.actionHint && this.actionHint.parentElement) {
-            this.actionHint.remove();
-        }
-        
-        // 移除编辑状态类，恢复展开/收起按钮
-        if (this.commentEl) {
-            this.commentEl.removeClass('editing');
-            this.commentEl = null;
-        }
+        removeCommentInputElements(this.getElements());
+        this.commentEl = null;
     }
     
     /**
@@ -318,21 +196,8 @@ export class CommentInput {
             document.removeEventListener('click', this.boundHandleOutsideClick);
             this.saveController.reset();
             
-            // 检查 textarea 是否仍在 DOM 中
-            if (this.textarea && this.textarea.isConnected && this.textarea.parentElement) {
-                this.textarea.remove();
-            }
-            
-            // 检查 actionHint 是否仍在 DOM 中
-            if (this.actionHint && this.actionHint.isConnected && this.actionHint.parentElement) {
-                this.actionHint.remove();
-            }
-            
-            // 检查 commentEl 是否仍在 DOM 中
-            if (this.commentEl && this.commentEl.isConnected) {
-                this.commentEl.removeClass('editing');
-                this.commentEl = null;
-            }
+            removeCommentInputElements(this.getElements(), true);
+            this.commentEl = null;
         } catch (error) {
             // 捕获任何错误，避免应用冻结
             console.error('[CommentInput] 安全销毁时出错:', error);
@@ -371,5 +236,14 @@ export class CommentInput {
 
         this.isOpen = false;
         this.options.onClosed?.();
+    }
+
+    private getElements() {
+        return {
+            card: this.card,
+            textarea: this.textarea,
+            actionHint: this.actionHint,
+            commentEl: this.commentEl
+        };
     }
 }
