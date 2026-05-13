@@ -24,7 +24,7 @@ export class FileMappingStore {
             }
 
             this.fileMapping = new Map(Object.entries(data.mapping));
-        } catch (error) {
+        } catch {
             this.fileMapping = new Map();
         }
     }

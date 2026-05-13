@@ -167,7 +167,7 @@ export class HighlightMatcher {
                     await highlightRepository.saveFileHighlights(filePath, storedComments);
                 }
             }
-        } catch (error) {
+        } catch {
             // 静默处理，定位锚点更新失败不影响主流程
         }
     }

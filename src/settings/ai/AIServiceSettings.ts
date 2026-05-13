@@ -156,7 +156,7 @@ export abstract class BaseAIServiceSettings implements AIServiceSettings {
                     try {
                         const success = await onCheck();
                         this.showButtonStatus(button.buttonEl, success ? 'success' : 'error');
-                    } catch (error) {
+                    } catch {
                         this.showButtonStatus(button.buttonEl, 'error');
                     }
                 });

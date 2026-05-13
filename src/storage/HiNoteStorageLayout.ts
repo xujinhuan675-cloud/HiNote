@@ -12,7 +12,7 @@ export async function ensureHiNoteDirectoryStructure(app: App, vaultPath: string
     for (const dir of directories) {
         try {
             await app.vault.adapter.mkdir(dir);
-        } catch (error) {
+        } catch {
             // 目录可能已存在，忽略错误
         }
     }

@@ -62,7 +62,7 @@ export class HighlightExtractor {
                 try {
                     const pattern = new RegExp(rule.pattern, 'g');
                     this.processRegexMatches(content, pattern, highlights, file, rule.color);
-                } catch (error) {
+                } catch {
                     // 忽略正则规则错误
                 }
             }

@@ -114,7 +114,7 @@ export class CustomAISettings extends BaseAIServiceSettings {
                                 this.renderDetectedApiType(settingsContainer);
                             }
                         }
-                    } catch (error) {
+                    } catch {
                         this.showButtonStatus(button.buttonEl, 'error');
                     }
                 });
@@ -168,7 +168,7 @@ export class CustomAISettings extends BaseAIServiceSettings {
                         await this.updateCustomSettings(settings => {
                             settings.headers = headers as Record<string, string>;
                         });
-                    } catch (error) {
+                    } catch {
                         new Notice(t('Invalid JSON format'));
                     }
                 });

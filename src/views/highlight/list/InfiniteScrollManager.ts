@@ -137,8 +137,10 @@ export class InfiniteScrollManager {
         this.sentinel = this.highlightContainer.createEl('div', {
             cls: 'scroll-sentinel'
         });
-        this.sentinel.style.height = '1px';
-        this.sentinel.style.width = '100%';
+        this.sentinel.setCssProps({
+            height: '1px',
+            width: '100%'
+        });
         
         // 使用 Intersection Observer 监听哨兵元素
         this.observer = new IntersectionObserver(

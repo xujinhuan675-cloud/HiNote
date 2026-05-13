@@ -21,7 +21,7 @@ export class FlashcardDataStore {
             }
 
             return data;
-        } catch (error) {
+        } catch {
             return null;
         }
     }

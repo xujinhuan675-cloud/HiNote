@@ -61,7 +61,7 @@ export class BaseHTTPClient {
             });
 
             return response.status >= 200 && response.status < 300;
-        } catch (error) {
+        } catch {
             return false;
         }
     }

@@ -190,7 +190,7 @@ export class HighlightManager {
                 if (fileHasOrphans) {
                     affectedFiles.add(filePath);
                 }
-            } catch (error) {
+            } catch {
                 // 错误处理
             }
         }
@@ -238,7 +238,7 @@ export class HighlightManager {
                         await this.repository.saveFileHighlights(filePath, validHighlights);
                     }
                 }
-            } catch (error) {
+            } catch {
                 // 错误处理
             }
         }

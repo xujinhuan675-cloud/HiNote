@@ -37,8 +37,8 @@ export function autoResizeCommentTextarea(textarea: HTMLTextAreaElement | undefi
 
         const scrollTop = window.scrollY || activeDocument.documentElement.scrollTop;
 
-        textarea.style.height = 'auto';
-        textarea.style.height = `${textarea.scrollHeight}px`;
+        textarea.setCssProps({ height: 'auto' });
+        textarea.setCssProps({ height: `${textarea.scrollHeight}px` });
 
         window.scrollTo(0, scrollTop);
     });

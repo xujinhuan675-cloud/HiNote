@@ -38,7 +38,7 @@ export class LocationService {
                 
                 targetLeaf = await this.app.workspace.getLeaf('tab');
                 await targetLeaf.openFile(file);
-            } catch (error) {
+            } catch {
                 new Notice("打开文件失败");
                 return null;
             }

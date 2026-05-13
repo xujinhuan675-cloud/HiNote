@@ -47,7 +47,7 @@ export class CommentInputSaveController {
             await this.options.onSave(content);
             this.options.onSaved();
             return true;
-        } catch (error) {
+        } catch {
             this.reset();
             return false;
         }

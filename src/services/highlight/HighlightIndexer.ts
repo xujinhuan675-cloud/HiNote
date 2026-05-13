@@ -113,7 +113,7 @@ export class HighlightIndexer {
             // 更新索引
             this.indexStore.replace(newWordToFiles, newFileToHighlights);
             
-        } catch (error) {
+        } catch {
             // 忽略索引构建错误
         } finally {
             this.isIndexing = false;
@@ -189,7 +189,7 @@ export class HighlightIndexer {
                     this.indexStore.setFileHighlights(file.path, highlightsWithFileInfo);
                 }
             }
-        } catch (error) {
+        } catch {
             // 忽略更新索引错误
         }
     }

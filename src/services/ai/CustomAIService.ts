@@ -105,7 +105,7 @@ export class CustomAIService {
             await this.requestOpenAICompatible(this.createTestMessages(), { max_tokens: 5 });
             this.detectedApiType = 'openai';
             return 'openai';
-        } catch (error) {
+        } catch {
             // OpenAI 格式失败，继续尝试其他格式
         }
 
@@ -114,7 +114,7 @@ export class CustomAIService {
             await this.requestAnthropicCompatible(this.createTestMessages(), 5);
             this.detectedApiType = 'anthropic';
             return 'anthropic';
-        } catch (error) {
+        } catch {
             // Anthropic 格式失败
         }
 
@@ -123,7 +123,7 @@ export class CustomAIService {
             await this.requestGeminiCompatible(this.createTestMessages());
             this.detectedApiType = 'gemini';
             return 'gemini';
-        } catch (error) {
+        } catch {
             // 所有格式都失败
         }
 
@@ -381,7 +381,7 @@ export class CustomAIService {
                 default:
                     return false;
             }
-        } catch (error) {
+        } catch {
             return false;
         }
     }

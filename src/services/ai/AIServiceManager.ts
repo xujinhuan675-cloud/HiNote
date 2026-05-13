@@ -73,7 +73,7 @@ export class AIServiceManager {
         try {
             const service = this.registry.getService(targetProvider, this.settings);
             return await service.testConnection();
-        } catch (error) {
+        } catch {
             return false;
         }
     }

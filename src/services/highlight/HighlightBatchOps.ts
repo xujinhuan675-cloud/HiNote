@@ -61,14 +61,14 @@ export class HighlightBatchOps {
                         try {
                             content = this.removeHighlightMarkFromContent(content, highlight);
                             successCount++;
-                        } catch (error) {
+                        } catch {
                             failedCount++;
                         }
                     }
                     return content;
                 });
                 
-            } catch (error) {
+            } catch {
                 failedCount += fileHighlights.length;
             }
         }

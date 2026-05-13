@@ -153,7 +153,7 @@ export abstract class BaseAIService implements IAIService {
                 headers: this.buildHeaders(),
                 body: JSON.stringify(requestBody)
             });
-        } catch (error) {
+        } catch {
             return false;
         }
     }

@@ -63,7 +63,7 @@ export class FlashcardGroupService {
         try {
             await this.options.saveStorage();
             return true;
-        } catch (error) {
+        } catch {
             return false;
         }
     }

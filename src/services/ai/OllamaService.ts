@@ -155,7 +155,7 @@ export class OllamaService {
             });
 
             return !!response?.version;
-        } catch (error) {
+        } catch {
             return false;
         }
     }

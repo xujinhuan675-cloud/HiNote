@@ -97,7 +97,7 @@ export class HiNoteDataManager {
             return Object.entries(data.highlights).map(([id, highlight]) => 
                 convertToLegacyHighlight(id, highlight, filePath)
             );
-        } catch (error) {
+        } catch {
             // 文件不存在或读取失败
             return [];
         }
@@ -140,7 +140,7 @@ export class HiNoteDataManager {
             await this.app.vault.adapter.remove(storagePath);
             this.fileMappingStore.delete(filePath);
             await this.saveFileMapping();
-        } catch (error) {
+        } catch {
             // 文件可能不存在，忽略错误
         }
     }
@@ -167,7 +167,7 @@ export class HiNoteDataManager {
             // 更新映射
             this.fileMappingStore.delete(oldPath);
             await this.saveFileMapping();
-        } catch (error) {
+        } catch {
             // 旧文件可能不存在，忽略错误
         }
     }

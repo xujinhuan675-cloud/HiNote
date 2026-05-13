@@ -63,7 +63,7 @@ export class OllamaSettings extends BaseAIServiceSettings {
                     const ollamaService = new OllamaService(host);
                     const models = await ollamaService.listModels();
                     this.showButtonStatus(button.buttonEl, (models && models.length > 0) ? 'success' : 'error');
-                } catch (error) {
+                } catch {
                     this.showButtonStatus(button.buttonEl, 'error');
                 }
             });

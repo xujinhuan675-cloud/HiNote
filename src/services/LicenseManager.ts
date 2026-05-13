@@ -66,7 +66,7 @@ export class LicenseManager {
             await this.saveVaultId(vaultId);
             
             return vaultId;
-        } catch (error) {
+        } catch {
 
             // 如果出错，回退到简单的 vault 路径哈希
             const vaultPath = this.plugin.app.vault.getName();
@@ -176,7 +176,7 @@ export class LicenseManager {
             // 设置 licenseToken
             this.licenseToken = licenseData.token;
             return true;
-        } catch (error) {
+        } catch {
 
             return false;
         }
@@ -244,7 +244,7 @@ export class LicenseManager {
             }
             
             return false;
-        } catch (error) {
+        } catch {
 
             // 如果服务器验证失败，但有本地token，仍然允许使用
             // 这样可以确保在网络问题时用户仍能使用插件
