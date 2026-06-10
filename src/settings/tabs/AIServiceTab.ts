@@ -15,7 +15,6 @@ export class AIServiceTab {
     }
 
     display(): void {
-        // AI 服务设置
         new Setting(this.containerEl)
             .setName('AI service')
             .setDesc(t('Select the AI service provider'))
@@ -26,7 +25,6 @@ export class AIServiceTab {
                     .onChange(async (value: AIProvider) => {
                         this.plugin.settings.ai.provider = value;
                         await this.plugin.saveSettings();
-                        // 重新显示设置
                         this.containerEl.empty();
                         this.display();
                     });
@@ -38,7 +36,6 @@ export class AIServiceTab {
             this.containerEl
         ).display(this.containerEl);
 
-        // 显示 Prompt 设置
         new PromptSettingsTab(this.plugin, this.containerEl).display();
     }
 

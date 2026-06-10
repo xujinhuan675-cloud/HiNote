@@ -1,7 +1,6 @@
 import { App } from "obsidian";
 import type { ViewState } from "../hinote/ViewState";
 import { DeviceManager, FileListManager } from "../managers";
-import { FlashcardViewManager } from "../highlight";
 import { LayoutManager } from "./LayoutManager";
 import type { HighlightInfo } from "../../types/highlight";
 
@@ -14,7 +13,6 @@ interface ViewPositionControllerOptions {
     canvasUpdateDelay: number;
     getDeviceManager: () => DeviceManager | null;
     getFileListManager: () => FileListManager | null;
-    getFlashcardViewManager: () => FlashcardViewManager | null;
     getLayoutManager: () => LayoutManager | null;
     updateHighlights: () => Promise<void>;
     updateAllHighlights: () => Promise<void>;
@@ -73,12 +71,6 @@ export class ViewPositionController {
     private enterSidebarView(wasInAllHighlightsView: boolean): void {
         const { state } = this.options;
 
-        if (state.isFlashcardMode) {
-            state.isFlashcardMode = false;
-            this.options.getFlashcardViewManager()?.exitFlashcardMode();
-            this.syncFileListSelection();
-        }
-
         const activeFile = this.options.app.workspace.getActiveFile();
         if (activeFile) {
             state.currentFile = activeFile;
@@ -103,8 +95,7 @@ export class ViewPositionController {
         if (!fileListManager) return;
 
         fileListManager.updateState({
-            currentFile: state.currentFile,
-            isFlashcardMode: state.isFlashcardMode
+            currentFile: state.currentFile
         });
         fileListManager.updateFileListSelection();
     }
@@ -116,7 +107,6 @@ export class ViewPositionController {
 
         layoutManager.updateState({
             isDraggedToMainView: state.isDraggedToMainView,
-            isFlashcardMode: state.isFlashcardMode,
             isShowingFileList: state.isShowingFileList
         });
         await layoutManager.updateViewLayout();

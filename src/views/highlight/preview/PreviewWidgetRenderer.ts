@@ -3,8 +3,9 @@ import { HighlightInfo as HiNote } from "../../../types/highlight";
 import { HighlightRepository } from "../../../repositories/HighlightRepository";
 import { HighlightService } from '../../../services/HighlightService';
 import { CommentWidgetHelper } from '../../../components/comment';
+import { getInlineComments, getInterlinearLabel } from '../../../components/interlinear/InterlinearCommentUtils';
 import { PreviewHighlightResolver } from "./PreviewHighlightResolver";
-import type { HiNotePluginContext } from "../../../types/plugin";
+import type { AnchorGlossPluginContext } from "../../../types/plugin";
 
 /**
  * 阅读模式下的批注小部件渲染器
@@ -14,7 +15,7 @@ export class PreviewWidgetRenderer {
     private highlightResolver: PreviewHighlightResolver;
 
     constructor(
-        private plugin: HiNotePluginContext,
+        private plugin: AnchorGlossPluginContext,
         private highlightRepository: HighlightRepository,
         private highlightService: HighlightService
     ) {
@@ -99,5 +100,35 @@ export class PreviewWidgetRenderer {
             // 创建清理观察器
             CommentWidgetHelper.createCleanupObserver(widget, tooltip);
         }
+
+        this.renderInlineGloss(mark, highlight);
+    }
+
+    private renderInlineGloss(mark: HTMLElement, highlight: HiNote): void {
+        const inlineComments = getInlineComments(highlight.comments);
+        if (inlineComments.length === 0) {
+            return;
+        }
+
+        const block = mark.ownerDocument.createElement('span');
+        block.className = 'anchor-gloss-inline-block anchor-gloss-inline-preview';
+
+        inlineComments.forEach(comment => {
+            const item = mark.ownerDocument.createElement('span');
+            item.className = 'anchor-gloss-inline-item';
+
+            const label = mark.ownerDocument.createElement('span');
+            label.className = 'anchor-gloss-inline-label';
+            label.textContent = getInterlinearLabel(comment);
+
+            const content = mark.ownerDocument.createElement('span');
+            content.className = 'anchor-gloss-inline-content';
+            content.textContent = comment.content;
+
+            item.append(label, content);
+            block.appendChild(item);
+        });
+
+        mark.insertAdjacentElement('afterend', block);
     }
 }

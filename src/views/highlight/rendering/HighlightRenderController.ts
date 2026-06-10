@@ -23,8 +23,8 @@ export class HighlightRenderController {
             onExport: (highlight) => {
                 void this.options.exportManager.exportHighlightAsImage(highlight);
             },
-            onAIResponse: async (highlight, content) => {
-                await this.options.commentController.addAIComment(highlight, content);
+            onAIResponse: async (highlight, content, promptName) => {
+                await this.options.commentController.addAIComment(highlight, content, promptName);
             }
         });
     }

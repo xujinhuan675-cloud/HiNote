@@ -23,12 +23,11 @@ export class HighlightRenderManager {
     private onCommentAdd: ((element: HTMLElement, h: HighlightInfo) => void) | null = null;
     private onCommentEdit: ((element: HTMLElement, h: HighlightInfo, c: CommentItem) => void) | null = null;
     private onExport: ((h: HighlightInfo) => void) | null = null;
-    private onAIResponse: ((h: HighlightInfo, content: string) => Promise<void>) | null = null;
+    private onAIResponse: ((h: HighlightInfo, content: string, promptName: string) => Promise<void>) | null = null;
     
     // 状态
     private currentFile: TFile | null = null;
     private isDraggedToMainView: boolean = false;
-    private highlightsWithFlashcards: Set<string> = new Set();
     private currentBatch: number = 0;
     private renderSequence = 0;
     private resizeObserver: ResizeObserver | null = null;
@@ -54,7 +53,7 @@ export class HighlightRenderManager {
         onCommentAdd?: (element: HTMLElement, h: HighlightInfo) => void;
         onCommentEdit?: (element: HTMLElement, h: HighlightInfo, c: CommentItem) => void;
         onExport?: (h: HighlightInfo) => void;
-        onAIResponse?: (h: HighlightInfo, content: string) => Promise<void>;
+        onAIResponse?: (h: HighlightInfo, content: string, promptName: string) => Promise<void>;
     }) {
         if (callbacks.onHighlightClick) {
             this.onHighlightClick = callbacks.onHighlightClick;
@@ -79,7 +78,6 @@ export class HighlightRenderManager {
     updateState(state: {
         currentFile?: TFile | null;
         isDraggedToMainView?: boolean;
-        highlightsWithFlashcards?: Set<string>;
         currentBatch?: number;
     }) {
         if (state.currentFile !== undefined) {
@@ -87,9 +85,6 @@ export class HighlightRenderManager {
         }
         if (state.isDraggedToMainView !== undefined) {
             this.isDraggedToMainView = state.isDraggedToMainView;
-        }
-        if (state.highlightsWithFlashcards !== undefined) {
-            this.highlightsWithFlashcards = state.highlightsWithFlashcards;
         }
         if (state.currentBatch !== undefined) {
             this.currentBatch = state.currentBatch;
@@ -261,9 +256,9 @@ export class HighlightRenderManager {
                         this.onCommentEdit(highlightCard.getElement(), h, c);
                     }
                 },
-                onAIResponse: async (content: string) => {
+                onAIResponse: async (content: string, promptName: string) => {
                     if (this.onAIResponse) {
-                        await this.onAIResponse(highlight, content);
+                        await this.onAIResponse(highlight, content, promptName);
                     }
                 }
             },
@@ -273,16 +268,6 @@ export class HighlightRenderManager {
             this.selectionManager ?? undefined,  // 传入 SelectionManager 实例，null 转为 undefined
             defaultHighlightCardRegistry
         );
-        
-        // 如果高亮已经创建了闪卡，立即更新UI状态
-        if (highlight.id && this.highlightsWithFlashcards.has(highlight.id)) {
-            window.setTimeout(() => {
-                if (highlight.id) {
-                    defaultHighlightCardRegistry.updateCardUIByHighlightId(highlight.id);
-                }
-            }, 0);
-        }
-
         // 根据位置更新样式
         const cardElement = highlightCard.getElement();
         cardElement.dataset.masonryOrder = String(this.renderSequence++);

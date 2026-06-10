@@ -3,7 +3,6 @@ import { t } from "../../../i18n";
 import { HighlightInfo } from "../../../types/highlight";
 import { ViewState } from "../../hinote/ViewState";
 import { HighlightRenderManager } from "../rendering";
-import { FlashcardViewManager } from "../flashcards";
 import { InfiniteScrollManager } from "./InfiniteScrollManager";
 import { GlobalHighlightService, HighlightDataService } from "../../../services/highlight";
 import { VirtualHighlightManager } from "../virtual";
@@ -19,7 +18,6 @@ interface HighlightListControllerOptions {
     getSearchInput: () => HTMLInputElement | null;
     getSearchUIManager: () => SearchUIManager | null;
     getHighlightRenderManager: () => HighlightRenderManager | null;
-    getFlashcardViewManager: () => FlashcardViewManager | null;
     getInfiniteScrollManager: () => InfiniteScrollManager | null;
     getGlobalHighlightService: () => GlobalHighlightService | null;
     getHighlightDataService: () => HighlightDataService | null;
@@ -33,13 +31,11 @@ export class HighlightListController {
 
     renderHighlights(highlightsToRender: HighlightInfo[], append = false): void {
         const highlightRenderManager = this.options.getHighlightRenderManager();
-        const flashcardViewManager = this.options.getFlashcardViewManager();
-        if (!highlightRenderManager || !flashcardViewManager) return;
+        if (!highlightRenderManager) return;
 
         highlightRenderManager.updateState({
             currentFile: this.options.state.currentFile,
             isDraggedToMainView: this.options.state.isDraggedToMainView,
-            highlightsWithFlashcards: flashcardViewManager.getFlashcardMarkers(),
             currentBatch: this.options.getInfiniteScrollManager()?.getCurrentBatch() || 0
         });
         highlightRenderManager.renderHighlights(
@@ -180,8 +176,6 @@ export class HighlightListController {
                 highlight.fileName = this.options.state.currentFile?.name;
             });
         }
-
-        this.options.getFlashcardViewManager()?.updateFlashcardMarkers(this.options.state.highlights);
         this.renderWithCurrentSearch();
     }
 

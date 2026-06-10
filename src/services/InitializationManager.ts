@@ -1,5 +1,4 @@
 import { HighlightDecorator } from '../editor/HighlightDecorator';
-import { FSRSManager } from '../flashcard';
 import { HighlightService } from './HighlightService';
 import { HiNoteDataManager } from '../storage/HiNoteDataManager';
 import { CanvasService } from './CanvasService';
@@ -77,11 +76,8 @@ export class InitializationManager {
         
         // 异步加载数据，不阻塞初始化
         highlightRepository.initialize().catch(error => {
-            console.error('[HiNote] 加载高亮数据失败:', error);
+            console.error('[Anchor Gloss] 加载高亮数据失败:', error);
         });
-
-        // 初始化 FSRS 管理器（传入数据管理器以使用新存储层）
-        const fsrsManager = new FSRSManager(this.plugin, dataManager);
 
         // 初始化高亮装饰器
         const highlightDecorator = new HighlightDecorator(this.plugin, highlightRepository, highlightService, eventManager);
@@ -92,7 +88,6 @@ export class InitializationManager {
             dataManager,
             highlightService,
             canvasService,
-            fsrsManager,
             highlightDecorator,
             highlightRepository,
             highlightManager

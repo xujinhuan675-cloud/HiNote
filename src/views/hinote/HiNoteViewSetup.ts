@@ -20,7 +20,6 @@ export async function setupHiNoteView(options: HiNoteViewSetupOptions): Promise<
         highlightManager,
         highlightRepository,
         highlightService,
-        licenseManager,
         exportService,
         canvasService,
         deviceManager,
@@ -28,7 +27,6 @@ export async function setupHiNoteView(options: HiNoteViewSetupOptions): Promise<
         eventCoordinator,
         exportManager,
         virtualHighlightManager,
-        flashcardViewManager,
         canvasUpdateDelay,
         jumpToHighlight,
         checkViewPosition,
@@ -70,7 +68,6 @@ export async function setupHiNoteView(options: HiNoteViewSetupOptions): Promise<
         getSearchInput: () => searchInput,
         getSearchUIManager: () => searchUIManager,
         getHighlightRenderManager: () => highlightRenderManager,
-        getFlashcardViewManager: () => flashcardViewManager,
         getInfiniteScrollManager: () => infiniteScrollManager,
         getGlobalHighlightService: () => layoutAndCanvas?.globalHighlightService ?? null,
         getHighlightDataService: () => highlightDataService,
@@ -81,10 +78,6 @@ export async function setupHiNoteView(options: HiNoteViewSetupOptions): Promise<
 
     component.registerDomEvent(uiElements.backButton, "click", () => {
         if (state.isMobileView && state.isSmallScreen && state.isDraggedToMainView) {
-            if (flashcardViewManager.handleBackButton()) {
-                return;
-            }
-
             state.isShowingFileList = true;
             void updateViewLayout();
         }
@@ -112,7 +105,6 @@ export async function setupHiNoteView(options: HiNoteViewSetupOptions): Promise<
     const interactions = setupSearchAndSelection({
         plugin,
         exportService,
-        licenseManager,
         highlightService,
         containerEl,
         state,
@@ -128,12 +120,10 @@ export async function setupHiNoteView(options: HiNoteViewSetupOptions): Promise<
     const fileList = setupFileList({
         plugin,
         highlightService,
-        licenseManager,
         state,
         fileListContainer,
         highlightContainer,
         searchContainer,
-        flashcardViewManager,
         highlightListController,
         updateViewLayout
     });
@@ -164,7 +154,6 @@ export async function setupHiNoteView(options: HiNoteViewSetupOptions): Promise<
         highlightService,
         highlightDataService,
         fileListManager,
-        flashcardViewManager,
         highlightListController,
         fileListContainer,
         mainContentContainer,
@@ -202,7 +191,6 @@ export async function setupHiNoteView(options: HiNoteViewSetupOptions): Promise<
 
     layoutAndCanvas.layoutManager.updateState({
         isDraggedToMainView: state.isDraggedToMainView,
-        isFlashcardMode: state.isFlashcardMode,
         isShowingFileList: state.isShowingFileList
     });
     await layoutAndCanvas.layoutManager.updateViewLayout();

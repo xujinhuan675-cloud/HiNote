@@ -42,7 +42,8 @@ export class HighlightCardRegistry {
     }
 
     updateCardUIByHighlightId(highlightId: string): void {
-        this.findByHighlightId(highlightId)?.updateIconsAfterCardCreation();
+        // Flashcard-specific icon updates have been removed from Anchor Gloss.
+        void highlightId;
     }
 }
 

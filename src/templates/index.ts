@@ -154,7 +154,7 @@ export const socialTemplate: CardTemplate = {
         
         const appName = activeDocument.createElement('div');
         appName.className = 'highlight-export-app-name';
-        appName.textContent = 'HiNote';
+        appName.textContent = 'Anchor Gloss';
         header.appendChild(appName);
         
         cardContainer.appendChild(header);

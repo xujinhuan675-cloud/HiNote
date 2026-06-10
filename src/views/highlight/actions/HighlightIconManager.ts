@@ -7,7 +7,6 @@ import { setIcon } from 'obsidian';
 export class HighlightIconManager {
     // 图标常量
     private static readonly ICONS = {
-        FLASHCARD: 'book-heart',
         FILE: 'file-text',
         HIGHLIGHT: 'highlighter',
         MESSAGE: 'message-circle'
@@ -18,17 +17,12 @@ export class HighlightIconManager {
      * @param cardElement 卡片元素
      * @param hasFlashcard 是否有闪卡
      */
-    static updateCardIcons(cardElement: HTMLElement, hasFlashcard: boolean): void {
+    static updateCardIcons(cardElement: HTMLElement): void {
         const fileIcons = cardElement.querySelectorAll('.highlight-card-icon');
-        const iconName = hasFlashcard ? this.ICONS.FLASHCARD : this.ICONS.FILE;
+        const iconName = this.ICONS.FILE;
         
         fileIcons.forEach(icon => {
             setIcon(icon as HTMLElement, iconName);
-            if (hasFlashcard) {
-                (icon as HTMLElement).addClass('has-flashcard');
-            } else {
-                (icon as HTMLElement).removeClass('has-flashcard');
-            }
         });
     }
     
@@ -37,15 +31,9 @@ export class HighlightIconManager {
      * @param iconElement 图标元素
      * @param hasFlashcard 是否有闪卡
      */
-    static setFileIcon(iconElement: HTMLElement, hasFlashcard: boolean): void {
-        const iconName = hasFlashcard ? this.ICONS.FLASHCARD : this.ICONS.FILE;
+    static setFileIcon(iconElement: HTMLElement): void {
+        const iconName = this.ICONS.FILE;
         setIcon(iconElement, iconName);
-        
-        if (hasFlashcard) {
-            iconElement.addClass('has-flashcard');
-        } else {
-            iconElement.removeClass('has-flashcard');
-        }
     }
     
     /**
@@ -53,32 +41,22 @@ export class HighlightIconManager {
      * @param iconElement 图标元素
      * @param hasFlashcard 是否有闪卡
      */
-    static setHighlightIcon(iconElement: HTMLElement, hasFlashcard: boolean): void {
-        const iconName = hasFlashcard ? this.ICONS.FLASHCARD : this.ICONS.HIGHLIGHT;
+    static setHighlightIcon(iconElement: HTMLElement): void {
+        const iconName = this.ICONS.HIGHLIGHT;
         setIcon(iconElement, iconName);
-        
-        if (hasFlashcard) {
-            iconElement.addClass('has-flashcard');
-        } else {
-            iconElement.removeClass('has-flashcard');
-        }
     }
     
     /**
      * 获取图标名称
      */
-    static getIconName(type: 'flashcard' | 'file' | 'highlight' | 'message'): string {
+    static getIconName(type: 'file' | 'highlight' | 'message'): string {
         switch (type) {
-            case 'flashcard':
-                return this.ICONS.FLASHCARD;
             case 'file':
                 return this.ICONS.FILE;
             case 'highlight':
                 return this.ICONS.HIGHLIGHT;
             case 'message':
                 return this.ICONS.MESSAGE;
-            default:
-                return this.ICONS.FILE;
         }
     }
 }

@@ -1,11 +1,9 @@
 {
-	"id": "hi-note",
-	"name": "HiNote",
-	"version": "0.5.7",
+	"id": "anchor-gloss",
+	"name": "Anchor Gloss",
+	"version": "0.1.0",
 	"minAppVersion": "1.8.0",
-	"description": "Add comments to highlighted notes, use AI for thinking, and flashcards for memory.",
-	"author": "Kai",
-	"authorUrl": "https://github.com/CatMuse",
-	"fundingUrl": "https://ko-fi.com/catmuse",
+	"description": "Highlight text with visible anchors and place AI explanations directly under the original text.",
+	"author": "xujinhuan",
 	"isDesktopOnly": false
 }

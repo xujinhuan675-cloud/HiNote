@@ -1,7 +1,7 @@
 {
-	"name": "hi-note",
-	"version": "0.5.7",
-	"description": "Enhance your highlighted notes with comment management and export features.",
+	"name": "anchor-gloss",
+	"version": "0.1.0",
+	"description": "Obsidian plugin for highlighted reading anchors with inline AI glosses.",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
@@ -9,7 +9,7 @@
 		"version": "node version-bump.mjs && git add manifest.json versions.json"
 	},
 	"keywords": [],
-	"author": "",
+	"author": "xujinhuan",
 	"license": "MIT",
 	"devDependencies": {
 		"@types/node": "^16.11.6",

@@ -3,7 +3,7 @@ import { CanvasService } from "../../../services/CanvasService";
 import { HighlightRepository } from "../../../repositories/HighlightRepository";
 import { HighlightService } from "../../../services/HighlightService";
 import { GlobalHighlightService, HighlightDataService } from "../../../services/highlight";
-import { CanvasHighlightProcessor, FlashcardViewManager, HighlightListController } from "../../highlight";
+import { CanvasHighlightProcessor, HighlightListController } from "../../highlight";
 import { LayoutManager, ViewPositionController, ViewPositionDetector } from "../../layout";
 import { DeviceManager, FileListManager } from "../../managers";
 import { ViewState } from "../ViewState";
@@ -20,7 +20,6 @@ interface LayoutAndCanvasSetupOptions {
     highlightService: HighlightService;
     highlightDataService: HighlightDataService;
     fileListManager: FileListManager;
-    flashcardViewManager: FlashcardViewManager;
     highlightListController: HighlightListController;
     fileListContainer: HTMLElement;
     mainContentContainer: HTMLElement;
@@ -49,7 +48,6 @@ export function setupLayoutAndCanvas(options: LayoutAndCanvasSetupOptions): {
         highlightService,
         highlightDataService,
         fileListManager,
-        flashcardViewManager,
         highlightListController,
         fileListContainer,
         mainContentContainer,
@@ -71,7 +69,6 @@ export function setupLayoutAndCanvas(options: LayoutAndCanvasSetupOptions): {
         onUpdateFileList: async (forceRefresh?: boolean) => {
             fileListManager.updateState({
                 currentFile: state.currentFile,
-                isFlashcardMode: state.isFlashcardMode,
                 isMobileView: state.isMobileView,
                 isSmallScreen: state.isSmallScreen,
                 isDraggedToMainView: state.isDraggedToMainView
@@ -90,7 +87,6 @@ export function setupLayoutAndCanvas(options: LayoutAndCanvasSetupOptions): {
         canvasUpdateDelay,
         getDeviceManager: () => deviceManager,
         getFileListManager: () => fileListManager,
-        getFlashcardViewManager: () => flashcardViewManager,
         getLayoutManager: () => layoutManager,
         updateHighlights: async () => await highlightListController.updateHighlights(),
         updateAllHighlights: async () => await highlightListController.updateAllHighlights(),

@@ -47,9 +47,9 @@ export class CommentController {
         });
     }
 
-    async addAIComment(highlight: HighlightInfo, content: string): Promise<void> {
+    async addAIComment(highlight: HighlightInfo, content: string, promptName: string): Promise<void> {
         this.syncCommentServiceState();
-        await this.options.commentService.addComment(highlight, content);
+        await this.options.commentService.addComment(highlight, content, this.getAICommentOptions(promptName));
         await this.options.updateHighlights();
     }
 
@@ -62,6 +62,24 @@ export class CommentController {
             currentFile: this.options.state.currentFile,
             highlights: this.options.state.highlights
         });
+    }
+
+    private getAICommentOptions(promptName: string) {
+        const normalized = promptName.toLowerCase();
+
+        if (normalized.includes('翻译') || normalized.includes('translate') || normalized.includes('translation')) {
+            return { kind: 'translation' as const, source: 'ai' as const, inline: true, promptName };
+        }
+
+        if (normalized.includes('主干') || normalized.includes('结构') || normalized.includes('structure')) {
+            return { kind: 'structure' as const, source: 'ai' as const, inline: true, promptName };
+        }
+
+        if (normalized.includes('白话') || normalized.includes('改写') || normalized.includes('rewrite')) {
+            return { kind: 'rewrite' as const, source: 'ai' as const, inline: true, promptName };
+        }
+
+        return { kind: 'explanation' as const, source: 'ai' as const, inline: true, promptName };
     }
 
     private updateCard(highlight: HighlightInfo): void {

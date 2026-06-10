@@ -37,7 +37,6 @@ export class SearchUIHelper {
         const prefixes = [
             { prefix: 'all:', description: t('search-prefix-all') },
             { prefix: 'path:', description: t('search-prefix-path') },
-            { prefix: 'hicard:', description: t('search-prefix-hicard') },
             { prefix: 'comment:', description: t('search-prefix-comment') }
         ];
         

@@ -329,6 +329,22 @@ export class DataValidator {
             sanitized.updated = comment.updatedAt;
         }
 
+        if (comment.kind && typeof comment.kind === 'string') {
+            sanitized.kind = comment.kind as CommentItem['kind'];
+        }
+
+        if (comment.source && typeof comment.source === 'string') {
+            sanitized.source = comment.source as CommentItem['source'];
+        }
+
+        if (typeof comment.inline === 'boolean') {
+            sanitized.inline = comment.inline;
+        }
+
+        if (comment.promptName && typeof comment.promptName === 'string') {
+            sanitized.promptName = comment.promptName;
+        }
+
         return sanitized;
     }
 }

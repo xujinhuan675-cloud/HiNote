@@ -28,10 +28,6 @@ export function normalizeSettings(raw: SettingsData, existingData?: SettingsData
         showCommentWidget: source.showCommentWidget ?? defaults.showCommentWidget
     };
 
-    if (existing['flashcard-license'] ?? source['flashcard-license']) {
-        settings['flashcard-license'] = existing['flashcard-license'] ?? source['flashcard-license'];
-    }
-
     return settings;
 }
 

@@ -1,7 +1,5 @@
 export default {
-
-//通用翻译
-
+    //通用翻译
     "Ollama (Local)": "Ollama (local)",
     "Model": "Model",
     "Save": "Save",
@@ -13,11 +11,10 @@ export default {
     "Cloze card": "Cloze card",
     "Cloze card content": "Cloze card content",
     "Cloze card answer": "Cloze card answer",
-  
-//AI 通用
 
+    //AI 通用
     "Select the AI service provider": "Select the AI service provider.",
-    "API Key": "API key",  
+    "API Key": "API key",
     "Please enter your API Key.": "Please enter your API key.",
     "API Key is valid!": "API Key is valid!",
     "API Key and model available.": "API Key and model available.",
@@ -28,27 +25,22 @@ export default {
     "Please enter an API Key first": "Please enter an API Key first.",
     "Custom model unavailable. Please check the model ID and your access permissions.": "Custom model unavailable. Please check the model ID and your access permissions.",
 
-//OpenAI 设置
-
+    //OpenAI 设置
     "OpenAI service": "OpenAI service",
     "No models available. Please check your API Key.": "No models available. Please check your API Key.",
 
-//Anthropic 设置
-
+    //Anthropic 设置
     "Anthropic service": "Anthropic service",
     "Model ID can only contain letters, numbers, underscores, dots and hyphens.": "Model ID can only contain letters, numbers, underscores, dots and hyphens.",
 
-//Gemini 设置
-
+    //Gemini 设置
     "Unable to create model selection dropdown menu.": "Unable to create model selection dropdown menu.",
     "Gemini service": "Gemini service",
 
-//Deepseek 设置
-
+    //Deepseek 设置
     "Deepseek service": "Deepseek service",
 
-//Custom AI 设置
-
+    //Custom AI 设置
     "Custom AI Service": "Custom AI Service",
     "Configure your own AI service provider. Supports OpenAI, Anthropic, and Gemini compatible APIs.": "Configure your own AI service provider. Supports OpenAI, Anthropic, and Gemini compatible APIs.",
     "The API type will be automatically detected based on your URL.": "The API type will be automatically detected based on your URL.",
@@ -74,13 +66,11 @@ export default {
     "Invalid JSON format. Headers must be an object.": "Invalid JSON format. Headers must be an object.",
     "Invalid JSON format": "Invalid JSON format",
 
-//批注展开/收起
-
+    //批注展开/收起
     "Expand": "Expand",
     "Collapse": "Collapse",
 
-//Ollama 设置
-
+    //Ollama 设置
     "Ollama service": "Ollama service",
     "Ollama server URL (default: http://localhost:11434)": "Ollama server URL (default: http://localhost:11434)",
     "Check": "Check",
@@ -94,8 +84,7 @@ export default {
     "No models available. Please load an available model first.": "No models available. Please load an available model first.",
     "No models available": "No models available",
 
-//Prompt 设置
-
+    //Prompt 设置
     "Prompt settings": "Custom prompt",
     "Add Prompt": "Add prompt",
     "Input Prompt Name": "Input prompt name",
@@ -103,8 +92,7 @@ export default {
     "Prompt added": "Prompt added",
     "Prompt updated": "Prompt updated",
 
-//CommentInput
-
+    //CommentInput
     "Shift + Enter Wrap, Enter Save": "Shift + Enter Wrap, Enter Save",
     "Tab AI, Shift + Enter Wrap, Enter Save": "Tab AI, Shift + Enter Wrap, Enter Save",
     "Please enter AI instruction": "Please enter AI instruction",
@@ -112,26 +100,22 @@ export default {
     "AI generation failed": "AI generation failed",
     "Delete comment": "Delete",
 
-//ActionButtons
-
+    //ActionButtons
     "Add Comment": "Add comment",
     "Export as Image": "Export as image",
 
-//AIButton
-
+    //AIButton
     "Select Prompt": "Select prompt",
     "Please add Prompt in the settings first": "Please add prompt in the settings first",
     "AI comments have been added": "AI comments have been added",
     "AI comments failed:": "AI comments failed:",
 
-//ExportModal
-
+    //ExportModal
     "Download": "Download",
     "Export successful!": "Export successful!",
     "Export failed, please try again.": "Export failed, please try again.",
 
-//CommentView
-
+    //CommentView
     "Loading...": "Loading...",
     "Search...": "Search...",
     "No matching content found.": "No matching content found.",
@@ -145,8 +129,7 @@ export default {
     "Successfully exported highlights to: ": "Successfully exported highlights to: ",
     "Failed to export highlights: ": "Failed to export highlights: ",
 
-//index
-
+    //index
     "Default Template": "Default template",
     "Modern minimalist knowledge card style": "Modern minimalist knowledge card style",
     "Academic Template": "Academic template",
@@ -154,14 +137,13 @@ export default {
     "Social Template": "Social template",
     "Modern style suitable for social media sharing": "Modern style suitable for social media sharing",
 
-//main
+    //main
+    "Open HiNote window": "Open Anchor Gloss window",
 
-    "Open HiNote window": "Open HiNote window",
-
-// Settings
-    'General': 'Highlight',
-    'Export Path': 'Export path',
-    'Set the path for exported highlight notes. Leave empty to use vault root. The path should be relative to your vault root.': 'Set the path for exported highlight notes. Leave empty to use vault root. The path should be relative to your vault root.',
+    // Settings
+    "General": "Highlight",
+    "Export Path": "Export path",
+    "Set the path for exported highlight notes. Leave empty to use vault root. The path should be relative to your vault root.": "Set the path for exported highlight notes. Leave empty to use vault root. The path should be relative to your vault root.",
     "Exclusions": "Exclusions",
     "Comma separated list of paths, tags, note titles or file extensions that will be excluded from highlighting. e.g. folder1, folder1/folder2, [[note1]], [[note2]], *.excalidraw.md": "Comma separated list of paths, tags, note titles or file extensions that will be excluded from highlighting. e.g. folder1, folder1/folder2, [[note1]], [[note2]], *.excalidraw.md",
     "Custom text extraction": "Custom text extraction",
@@ -177,88 +159,15 @@ export default {
     "Clean orphaned data": "Clean orphaned data",
     "Remove highlights and comments that no longer exist in your documents. This is useful if you have deleted highlights but their comments are still stored in the data file.": "Remove highlights and comments that no longer exist in your documents. This is useful if you have deleted highlights but their comments are still stored in the data file.",
 
-// Flashcard Settings
-    "Flashcard learning": "Flashcard learning",
-    "New cards per day": "New cards per day",
-    "Maximum number of new cards to learn each day": "Maximum number of new cards to learn each day.",
-    "Reviews per day": "Reviews per day",
-    "Maximum number of cards to review each day": "Maximum number of cards to review each day.",
-    "Target retention": "Target retention",
-    "Target memory retention rate (0.8 = 80%)": "Target memory retention rate (0.8 = 80%).",
-    "Maximum interval": "Maximum interval",
-    "Maximum interval in days between reviews": "Maximum interval in days between reviews.",
-    "Reset daily stats": "Reset daily stats",
-    "Reset today's learning statistics": "Reset today's learning statistics.",
-    "Reset": "Reset",
-    "Daily statistics have been reset": "Daily statistics have been reset",
-    "No statistics to reset for today": "No statistics to reset for today",
-    "Advanced": "Advanced",
-    "These settings control the FSRS algorithm parameters. Only change them if you understand the algorithm.": "These settings control the FSRS algorithm parameters. Only change them if you understand the algorithm.",
-    "Reset algorithm parameters": "Reset algorithm parameters",
-    "Reset the FSRS algorithm parameters to default values": "Reset the FSRS algorithm parameters to default values.",
-    "Reset to Default": "Reset to default",
-    "FSRS parameters have been reset to default values": "FSRS parameters have been reset to default values.",
-    "days": "days",
-    
-    // Flashcard UI
-    "Activate HiCard": "Activate HiCard",
-    "Enter your license key to activate HiCard feature.": "Enter your license key to activate HiCard feature.",
-    "Get your license key from": "Get your license key from",
-    "HiNote official website": "HiNote official website",
-    "Enter license key": "Enter license key",
-    "Activate": "Activate",
-    "Please enter a license key": "Please enter a license key",
-    "HiCard activated successfully!": "HiCard activated successfully!",
-    "Invalid license key": "Invalid license key",
-    "Use global settings": "Use global settings",
-    "New cards per day:": "New cards per day:",
-    "Reviews per day:": "Reviews per day:",
-    "Create Group": "Create group",
-    "Create": "Create",
-    "Again": "Again",
-    "Hard": "Hard",
-    "Good": "Good",
-    "Add answer": "Add answer",
-    "Add answer...": "Add answer...",
-    "Please enter an answer.": "Please enter an answer.",
-    "No corresponding highlight found.": "No corresponding highlight found.",
-    "Answer saved.": "Answer saved.",
-    "Saved as a comment on the original highlight.": "Saved as a comment on the original highlight.",
-    "Easy": "Easy",
-    "Card": "Card",
-    "of": "of",
-    "Settings": "Settings",
-    "Are you sure you want to delete this group?": "Are you sure you want to delete this group?",
-    "Yes": "Yes",
-    "No": "No",
-    "You've completed All cards for today!": "You've completed All cards for today!",
-    "No cards available.": "No cards available.",
-    "Return to First Card": "Return to First Card",
-    "Edit Group": "Edit group",
-    "Create New Group": "Create new group",
-    "Please fill in all fields": "Please fill in all fields",
-    "Saving...": "Saving...",
-    "Creating...": "Creating...",
-    "Group updated successfully": "Group updated successfully",
-    "Failed to update group": "Failed to update group",
-    "Group created successfully": "Group created successfully",
-    "Failed to create or update group": "Failed to create or update group",
-    "Retention": "Retention",
-    "Limits:": "Limits:",
-    "Learning completed!": "Learning completed!",
-    "Group deleted": "Group deleted",
-    
     // 搜索前缀提示
     "search-prefix-all": "match all file highlights",
-    "search-prefix-hicard": "match flashcards only",
     "search-prefix-comment": "match with comments only",
     "search-prefix-path": "match path of the file",
 
     // 其他
+    "Open (double-click)": "Open (double-click)",
 
-    "Open (DoubleClick)": "Open (double-click)",
-
-    // AI Test Feedback
+    // AI 测试反馈相关
     "Testing": "Testing",
     "connection": "connection",
     "connection successful!": "connection successful!",
@@ -267,8 +176,8 @@ export default {
     "Please enter your": "Please enter your",
     "API Key first.": "API Key first.",
     "host address first.": "host address first.",
-    
-    // Friendly Error Messages
+
+    // 友好的错误消息
     "Invalid API Key": "Invalid API Key",
     "Access denied": "Access denied",
     "Rate limit exceeded": "Rate limit exceeded",
@@ -276,8 +185,7 @@ export default {
     "Service unavailable": "Service unavailable",
     "Service not found": "Service not found",
     "Server error": "Server error",
-    
-    // Custom AI
-    "Detected API type": "Detected API type"
 
+    // Custom AI 相关
+    "Detected API type": "Detected API type"
 };

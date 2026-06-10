@@ -920,6 +920,60 @@ settings:
     position: relative;
 }
 
+.anchor-gloss-inline-block {
+    display: block;
+    margin: 6px 0 2px 0;
+    padding: 8px 10px 8px 12px;
+    border-left: 3px solid var(--interactive-accent);
+    border-radius: 0 8px 8px 0;
+    background: color-mix(in srgb, var(--background-secondary) 88%, var(--interactive-accent) 12%);
+}
+
+.anchor-gloss-inline-preview {
+    width: 100%;
+}
+
+.anchor-gloss-inline-item {
+    display: block;
+}
+
+.anchor-gloss-inline-item + .anchor-gloss-inline-item {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--background-modifier-border);
+}
+
+.anchor-gloss-inline-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-accent);
+}
+
+.anchor-gloss-inline-label::before {
+    content: "->";
+    color: var(--text-muted);
+}
+
+.anchor-gloss-inline-content {
+    display: block;
+    color: var(--text-normal);
+    font-size: 13px;
+    line-height: 1.65;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.cm-anchor-gloss-inline-block {
+    margin-left: 1.6em;
+    margin-right: 0.5em;
+}
+
 /* Flashcard styles */
 
 /* 闪卡统计面板样式 */

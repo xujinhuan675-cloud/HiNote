@@ -1,10 +1,10 @@
 import { Plugin } from 'obsidian';
-import { AISettingTab } from './src/settings/SettingsTab';
 import { PluginSettings } from './src/types/settings';
 import { InitializationManager } from './src/services/InitializationManager';
 import { WindowManager } from './src/plugin/WindowManager';
 import type { PluginServices } from './src/plugin/PluginServices';
 import { migrateSettings, normalizeSettings } from './src/settings/SettingsMigration';
+import { AISettingTab } from './src/settings/SettingsTab';
 import {
 	createPluginWindowManager,
 	registerPluginCommands,
@@ -21,7 +21,6 @@ export default class CommentPlugin extends Plugin {
 	// 公开服务实例供外部访问
 	get services(): PluginServices | null { return this.initManager.currentServices; }
 	get highlightDecorator() { return this.requireInitializedServices().highlightDecorator; }
-	get fsrsManager() { return this.requireInitializedServices().fsrsManager; }
 	get eventManager() { return this.requireInitializedServices().eventManager; }
 	get highlightService() { return this.requireInitializedServices().highlightService; }
 	get dataManager() { return this.requireInitializedServices().dataManager; }
@@ -34,7 +33,7 @@ export default class CommentPlugin extends Plugin {
 	requireInitializedServices(): PluginServices {
 		const services = this.initManager.currentServices;
 		if (!services) {
-			throw new Error('HiNote services have not been initialized.');
+			throw new Error('Anchor Gloss services have not been initialized.');
 		}
 		return services;
 	}
@@ -55,8 +54,6 @@ export default class CommentPlugin extends Plugin {
 		registerPluginViews(this);
 		registerPluginRibbon(this, this.windowManager);
 		registerPluginCommands(this, this.windowManager);
-
-		// 添加设置标签页
 		this.addSettingTab(new AISettingTab(this.app, this));
 
 		registerPluginVaultEvents(this);

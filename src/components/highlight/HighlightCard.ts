@@ -3,12 +3,11 @@ import type CommentPlugin from "../../../main";
 import { Notice } from "obsidian";
 import { t } from "../../i18n";
 import { SelectionManager } from "../../views/selection";
-import { HighlightDeletionManager, HighlightIconManager } from "../../views/highlight";
+import { HighlightDeletionManager } from "../../views/highlight";
 import {
     HighlightCardClipboard,
     HighlightCardDragController,
     HighlightCardFileNavigator,
-    HighlightCardFlashcardController,
     HighlightCardMenuController,
     HighlightCardSelectionController,
     HighlightCardTitleBarRenderer
@@ -23,9 +22,7 @@ import {
 export class HighlightCard {
     private card: HTMLElement;
     private fileName: string | undefined;
-    private hasFlashcard: boolean = false; // 保存闪卡状态
     private dragController: HighlightCardDragController;
-    private flashcardController: HighlightCardFlashcardController;
     private fileNavigator: HighlightCardFileNavigator;
     private selectionController: HighlightCardSelectionController;
     private titleBarRenderer: HighlightCardTitleBarRenderer;
@@ -43,7 +40,7 @@ export class HighlightCard {
             onCommentAdd: (highlight: HighlightInfo) => void;
             onExport: (highlight: HighlightInfo) => void;
             onCommentEdit: (highlight: HighlightInfo, comment: CommentItem) => void;
-            onAIResponse: (content: string) => Promise<void>;
+            onAIResponse: (content: string, promptName: string) => Promise<void>;
         },
         private isInMainView: boolean = false,
         fileName?: string,
@@ -77,28 +74,11 @@ export class HighlightCard {
             isInMainView: this.isInMainView,
             dragController: this.dragController,
             fileNavigator: this.fileNavigator,
-            hasFlashcard: () => this.checkHasFlashcard(),
-            onAIResponse: async (content) => {
-                await this.options.onAIResponse(content);
+            onAIResponse: async (content, promptName) => {
+                await this.options.onAIResponse(content, promptName);
             },
             onMoreActions: (button) => this.toggleMoreActionsDropdown(button)
         });
-        this.flashcardController = new HighlightCardFlashcardController(
-            plugin,
-            () => this.highlight,
-            () => this.fileName,
-            {
-                onCreated: () => {
-                    this.hasFlashcard = true;
-                    this.updateIconsAfterCardCreation();
-                },
-                onDeleted: () => {
-                    this.hasFlashcard = false;
-                    this.updateIconsAfterCardDeletion();
-                },
-                onDeleteHighlightCompletely: () => this.deletionManager.deleteHighlightCompletely(this.highlight)
-            }
-        );
         
         this.registry.register(this);
         
@@ -189,69 +169,25 @@ export class HighlightCard {
         this.options.onExport(this.highlight);
     }
 
+    public async deleteHiCardForHighlight(_silent: boolean = false): Promise<boolean> {
+        return false;
+    }
+
+    public async createHiCardForHighlight(_silent: boolean = false): Promise<boolean> {
+        return false;
+    }
+
     /**
      * 切换更多操作下拉菜单的显示/隐藏状态
      * @param dropdown 下拉菜单元素
      * @param button 触发菜单的按钮元素
      */
     private toggleMoreActionsDropdown(button: HTMLElement) {
-        // 检查闪卡状态
-        this.hasFlashcard = this.checkHasFlashcard();
-
-        this.menuController.show(button, this.hasFlashcard, {
-            onToggleFlashcard: () => this.handleCreateHiCard(),
+        this.menuController.show(button, {
             onCopyHighlight: () => this.copyHighlightContent(),
             onExportImage: () => this.handleExportAsImage(),
             onDeleteHighlight: () => this.handleDeleteHighlight()
         });
-    }
-
-    /**
-     * 检查高亮是否已经创建了闪卡
-     * @returns 是否已创建闪卡
-     */
-    private checkHasFlashcard(): boolean {
-        return this.flashcardController.checkHasFlashcard();
-    }
-    
-    /**
-     * 处理创建/删除 HiCard 的逻辑
-     */
-    private async handleCreateHiCard() {
-        await this.flashcardController.toggleFlashcard();
-    }
-
-    /**
-     * 公共方法：为高亮删除闪卡
-     * 可以被外部调用，用于批量删除闪卡
-     * @param silent 是否静默模式（不显示通知，不触发事件）
-     * @returns 删除是否成功
-     */
-    public async deleteHiCardForHighlight(silent: boolean = false): Promise<boolean> {
-        return this.flashcardController.deleteFlashcard(silent);
-    }
-
-    /**
-     * 公共方法：为高亮创建闪卡
-     * 可以被外部调用，用于批量创建闪卡
-     * @returns 创建是否成功
-     */
-    public async createHiCardForHighlight(silent: boolean = false): Promise<boolean> {
-        return this.flashcardController.createFlashcard(silent);
-    }
-
-    /**
-     * 更新删除闪卡后的图标显示
-     */
-    private updateIconsAfterCardDeletion() {
-        HighlightIconManager.updateCardIcons(this.card, false);
-    }
-
-    /**
-     * 更新创建闪卡后的图标显示
-     */
-    public updateIconsAfterCardCreation() {
-        HighlightIconManager.updateCardIcons(this.card, true);
     }
 
     /**
@@ -262,11 +198,6 @@ export class HighlightCard {
      */
     public async handleDeleteHighlight(skipConfirmation: boolean = false, skipNotice: boolean = false) {
         try {
-            // 如果有闪卡，先删除闪卡
-            if (this.hasFlashcard) {
-                await this.deleteHiCardForHighlight(true); // 静默模式，不显示通知
-            }
-            
             // 委托给删除管理器
             const success = await this.deletionManager.deleteHighlight(
                 this.highlight,

@@ -13,8 +13,7 @@ interface HighlightCardTitleBarRendererOptions {
     isInMainView: boolean;
     dragController: HighlightCardDragController;
     fileNavigator: HighlightCardFileNavigator;
-    hasFlashcard: () => boolean;
-    onAIResponse: (content: string) => Promise<void>;
+    onAIResponse: (content: string, promptName: string) => Promise<void>;
     onMoreActions: (button: HTMLElement) => void;
 }
 
@@ -141,12 +140,6 @@ export class HighlightCardTitleBarRenderer {
     }
 
     private setTitleIcon(icon: HTMLElement, fallbackType: 'file' | 'highlight'): void {
-        if (this.options.hasFlashcard()) {
-            setIcon(icon, 'book-heart');
-            icon.addClass('has-flashcard');
-            return;
-        }
-
         setIcon(icon, fallbackType === 'file' ? 'file-text' : 'highlighter');
     }
 }

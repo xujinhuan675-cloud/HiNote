@@ -203,7 +203,7 @@ export class CommentWidgetHelper {
      */
     static async openCommentPanel(app: App, highlight: HiNote, eventManager: EventManager): Promise<void> {
         const workspace = app.workspace;
-        const existing = workspace.getLeavesOfType("hinote-view");
+        const existing = workspace.getLeavesOfType("anchor-gloss-view");
 
         if (existing.length) {
             await workspace.revealLeaf(existing[0]);
@@ -212,7 +212,7 @@ export class CommentWidgetHelper {
             const leaf = workspace.getRightLeaf(false);
             if (leaf) {
                 await leaf.setViewState({
-                    type: "hinote-view",
+                    type: "anchor-gloss-view",
                     active: true
                 });
                 await new Promise(resolve => window.setTimeout(resolve, 200));

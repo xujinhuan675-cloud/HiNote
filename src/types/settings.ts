@@ -2,16 +2,9 @@ import type { AISettings } from './ai';
 import { DEFAULT_SILICONFLOW_MODELS } from './ai';
 import type { HighlightInfo, HighlightSettings } from './highlight';
 
-export interface FlashcardLicense {
-    key: string;
-    token: string;
-    features: string[];
-}
-
 export interface PluginSettings extends HighlightSettings {
     ai: AISettings;
     comments?: Record<string, Record<string, HighlightInfo>>;
-    'flashcard-license'?: FlashcardLicense;
     showCommentWidget?: boolean;
 }
 
@@ -78,7 +71,10 @@ export const DEFAULT_SETTINGS: PluginSettings = {
             lastCustomModel: ''
         },
         prompts: {
-            '🤔 Key Insight': '{{highlight}}.Please reinterpret the above content from a fresh perspective and summarize its core idea within 200 characters.'
+            '贴行翻译': '请把下面高亮内容翻译成自然、准确、适合阅读理解的中文。不要重复原文，只输出译文。\n\n{{highlight}}',
+            '主干提取': '请分析下面句子的主干结构，保留核心逻辑，输出要简洁，方便快速抓住句意。\n\n{{highlight}}',
+            '白话改写': '请把下面高亮内容改写成更易懂的白话表达，避免术语堆叠，保持原意。\n\n{{highlight}}',
+            '简明解释': '请对下面高亮内容做贴近原文的简明解释，帮助读者立刻理解它在说什么。\n\n{{highlight}}'
         }
     },
     export: {

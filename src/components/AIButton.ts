@@ -16,7 +16,7 @@ export interface ContentProvider {
  */
 export interface AIButtonOptions {
     /** AI 响应后的回调函数 */
-    onResponse: (content: string) => Promise<void>;
+    onResponse: (content: string, promptName: string) => Promise<void>;
     /** 按钮的 CSS 类名 */
     buttonClass: string;
     /** 按钮的图标名称 */
@@ -155,7 +155,7 @@ export class AIButton {
             );
 
             // 添加 AI 分析结果
-            await this.options.onResponse(response);
+            await this.options.onResponse(response, promptName);
 
             new Notice(t('AI comments added'));
 

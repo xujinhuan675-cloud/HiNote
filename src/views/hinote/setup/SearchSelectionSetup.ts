@@ -1,7 +1,6 @@
 import CommentPlugin from "../../../../main";
 import { ExportService } from "../../../services/ExportService";
 import { HighlightService } from "../../../services/HighlightService";
-import { LicenseManager } from "../../../services/LicenseManager";
 import { HighlightListController } from "../../highlight";
 import { BatchOperationsHandler, SelectionManager } from "../../selection";
 import { SearchUIManager } from "../../managers";
@@ -10,7 +9,6 @@ import { ViewState } from "../ViewState";
 interface SearchAndSelectionOptions {
     plugin: CommentPlugin;
     exportService: ExportService;
-    licenseManager: LicenseManager;
     highlightService: HighlightService;
     containerEl: HTMLElement;
     state: ViewState;
@@ -29,7 +27,6 @@ export function setupSearchAndSelection(options: SearchAndSelectionOptions): {
     const {
         plugin,
         exportService,
-        licenseManager,
         highlightService,
         containerEl,
         state,
@@ -61,7 +58,6 @@ export function setupSearchAndSelection(options: SearchAndSelectionOptions): {
     const batchOperationsHandler = new BatchOperationsHandler(
         plugin,
         exportService,
-        licenseManager,
         highlightService,
         containerEl
     );

@@ -27,7 +27,7 @@ export class BatchHighlightDeletionOperations {
         modal.titleEl.setText(t("Confirm delete highlights"));
 
         modal.contentEl.createEl("p", {
-            text: t(`Are you sure you want to delete ${selectedHighlights.size} highlights and all their data, including Comments and HiCards? This action cannot be undone.`)
+            text: t(`Are you sure you want to delete ${selectedHighlights.size} highlights and all their data, including comments? This action cannot be undone.`)
         });
 
         const buttonContainer = modal.contentEl.createEl("div", {
@@ -63,8 +63,6 @@ export class BatchHighlightDeletionOperations {
         let dataDeleteFailed = 0;
 
         try {
-            this.deleteRelatedFlashcards(highlightsArray);
-
             const result = await this.removeHighlightMarks(highlightsArray);
             fileMarkSuccess = result.success;
             fileMarkFailed = result.failed;
@@ -79,21 +77,6 @@ export class BatchHighlightDeletionOperations {
 
         this.options.clearSelection();
         this.showDeleteResult(fileMarkSuccess, fileMarkFailed, dataDeleteFailed);
-    }
-
-    private deleteRelatedFlashcards(highlights: HighlightInfo[]): void {
-        const fsrsManager = this.options.plugin.fsrsManager;
-        if (!fsrsManager) return;
-
-        for (const highlight of highlights) {
-            if (!highlight.id) continue;
-
-            try {
-                fsrsManager.deleteCardsBySourceId(highlight.id, "highlight");
-            } catch (error) {
-                console.error("[BatchDelete] 删除闪卡失败:", highlight.id, error);
-            }
-        }
     }
 
     private async removeHighlightMarks(highlights: HighlightInfo[]): Promise<{ success: number; failed: number }> {

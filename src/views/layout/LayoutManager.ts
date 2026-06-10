@@ -17,7 +17,6 @@ export class LayoutManager {
     
     // 状态
     private isDraggedToMainView: boolean = false;
-    private isFlashcardMode: boolean = false;
     private isShowingFileList: boolean = true;
     private isMobileView: boolean = false;
     private isSmallScreen: boolean = false;
@@ -58,16 +57,12 @@ export class LayoutManager {
      */
     updateState(state: {
         isDraggedToMainView?: boolean;
-        isFlashcardMode?: boolean;
         isShowingFileList?: boolean;
         isMobileView?: boolean;
         isSmallScreen?: boolean;
     }) {
         if (state.isDraggedToMainView !== undefined) {
             this.isDraggedToMainView = state.isDraggedToMainView;
-        }
-        if (state.isFlashcardMode !== undefined) {
-            this.isFlashcardMode = state.isFlashcardMode;
         }
         if (state.isShowingFileList !== undefined) {
             this.isShowingFileList = state.isShowingFileList;
@@ -184,13 +179,10 @@ export class LayoutManager {
             this.onRemoveFloatingButton();
         }
         
-        // 显示搜索容器（除非在闪卡模式）
-        if (!this.isFlashcardMode) {
-            this.searchContainer.removeClass('highlight-display-none');
-            const iconButtons = this.searchContainer.querySelector('.highlight-search-icons') as HTMLElement;
-            if (iconButtons) {
-                iconButtons.removeClass('highlight-display-none');
-            }
+        this.searchContainer.removeClass('highlight-display-none');
+        const iconButtons = this.searchContainer.querySelector('.highlight-search-icons') as HTMLElement;
+        if (iconButtons) {
+            iconButtons.removeClass('highlight-display-none');
         }
     }
     

@@ -32,6 +32,10 @@ export interface OptimizedComment {
     content: string;
     created: number;
     updated: number;
+    kind?: CommentItem['kind'];
+    source?: CommentItem['source'];
+    inline?: boolean;
+    promptName?: string;
 }
 
 export interface FileMappingData {
@@ -67,7 +71,11 @@ export function convertToLegacyHighlight(
             id: comment.id,
             content: comment.content,
             createdAt: comment.created,
-            updatedAt: comment.updated
+            updatedAt: comment.updated,
+            kind: comment.kind,
+            source: comment.source,
+            inline: comment.inline,
+            promptName: comment.promptName
         })) || []
     };
 }
@@ -121,7 +129,11 @@ export function convertToOptimizedHighlight(highlight: HiNote): OptimizedHighlig
             id: comment.id,
             content: comment.content,
             created: comment.createdAt,
-            updated: comment.updatedAt
+            updated: comment.updatedAt,
+            kind: comment.kind,
+            source: comment.source,
+            inline: comment.inline,
+            promptName: comment.promptName
         }));
     }
 

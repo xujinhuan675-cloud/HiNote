@@ -5,31 +5,37 @@ import { IdGenerator } from '../../utils/IdGenerator';
 import CommentPlugin from '../../../main';
 import { t } from '../../i18n';
 
+interface AddCommentOptions {
+    kind?: CommentItem['kind'];
+    source?: CommentItem['source'];
+    inline?: boolean;
+    promptName?: string;
+}
+
 /**
  * 评论服务
  * 负责评论的添加、更新、删除等业务逻辑
- * 
+ *
  * 职责：
  * - 评论的 CRUD 操作
  * - 虚拟高亮的管理
- * - 闪卡关联检查
  * - 文件查找逻辑
  */
 export class CommentService {
     private app: App;
     private plugin: CommentPlugin;
     private highlightManager: HighlightManager;
-    
+
     // 回调函数
     private onRefreshView: (() => Promise<void>) | null = null;
     private onHighlightsUpdate: ((highlights: HighlightInfo[]) => void) | null = null;
     private onCardUpdate: ((highlight: HighlightInfo) => void) | null = null;
     private onCardRemove: ((highlight: HighlightInfo) => void) | null = null;
-    
+
     // 当前状态
     private currentFile: TFile | null = null;
     private highlights: HighlightInfo[] = [];
-    
+
     constructor(
         app: App,
         plugin: CommentPlugin,
@@ -39,7 +45,7 @@ export class CommentService {
         this.plugin = plugin;
         this.highlightManager = highlightManager;
     }
-    
+
     /**
      * 设置回调函数
      */
@@ -62,7 +68,7 @@ export class CommentService {
             this.onCardRemove = callbacks.onCardRemove;
         }
     }
-    
+
     /**
      * 更新状态
      */
@@ -77,11 +83,11 @@ export class CommentService {
             this.highlights = state.highlights;
         }
     }
-    
+
     /**
      * 添加评论
      */
-    async addComment(highlight: HighlightInfo, content: string): Promise<void> {
+    async addComment(highlight: HighlightInfo, content: string, options?: AddCommentOptions): Promise<void> {
         const file = await this.getFileForHighlight(highlight);
         if (!file) {
             new Notice(t("No corresponding file found."));
@@ -92,7 +98,7 @@ export class CommentService {
         if (!highlight.id) {
             highlight.id = IdGenerator.generateHighlightId(
                 file.path,
-                highlight.position || 0, 
+                highlight.position || 0,
                 highlight.text
             );
         }
@@ -105,7 +111,11 @@ export class CommentService {
             id: IdGenerator.generateCommentId(),
             content,
             createdAt: Date.now(),
-            updatedAt: Date.now()
+            updatedAt: Date.now(),
+            kind: options?.kind,
+            source: options?.source,
+            inline: options?.inline,
+            promptName: options?.promptName
         };
 
         highlight.comments.push(newComment);
@@ -121,7 +131,7 @@ export class CommentService {
             await this.onRefreshView();
         }
     }
-    
+
     /**
      * 更新评论
      */
@@ -132,16 +142,11 @@ export class CommentService {
         const comment = highlight.comments.find(c => c.id === commentId);
         if (comment) {
             const oldContent = comment.content;
-            
+
             comment.content = content;
             comment.updatedAt = Date.now();
             highlight.updatedAt = Date.now();
             await this.highlightManager.addHighlight(file, highlight);
-
-            // 通过 EventManager 触发批注更新事件，用于闪卡同步
-            if (highlight.id) {
-                this.plugin.eventManager.emitCommentUpdate(file.path, oldContent, content, highlight.id);
-            }
 
             // 只更新单个卡片，而不是刷新整个视图
             if (this.onCardUpdate) {
@@ -152,7 +157,7 @@ export class CommentService {
             }
         }
     }
-    
+
     /**
      * 删除评论
      */
@@ -167,32 +172,23 @@ export class CommentService {
 
         // 检查高亮是否没有评论了
         if (highlight.comments.length === 0) {
-            // 检查高亮是否关联了闪卡
-            const hasFlashcard = highlight.id ? this.checkHasFlashcard(highlight.id) : false;
-            
-            // 如果是虚拟高亮或者没有关联闪卡，则删除整个高亮
-            if (highlight.isVirtual || !hasFlashcard) {
-                // 从 HighlightManager 中删除高亮
-                await this.highlightManager.removeHighlight(file, highlight);
-                removedHighlight = true;
-                
-                // 从当前高亮列表中移除
-                this.highlights = this.highlights.filter(h => {
-                    // 如果有 ID，通过 ID 比较
-                    if (h.id && highlight.id) {
-                        return h.id !== highlight.id;
-                    }
-                    // 如果没有 ID，通过位置和文本比较
-                    return !(h.position === highlight.position && h.text === highlight.text);
-                });
-                
-                // 通知外部更新高亮列表
-                if (this.onHighlightsUpdate) {
-                    this.onHighlightsUpdate(this.highlights);
+            // 从 HighlightManager 中删除高亮
+            await this.highlightManager.removeHighlight(file, highlight);
+            removedHighlight = true;
+
+            // 从当前高亮列表中移除
+            this.highlights = this.highlights.filter(h => {
+                // 如果有 ID，通过 ID 比较
+                if (h.id && highlight.id) {
+                    return h.id !== highlight.id;
                 }
-            } else {
-                // 有关联闪卡，只更新评论
-                await this.highlightManager.addHighlight(file, highlight);
+                // 如果没有 ID，通过位置和文本比较
+                return !(h.position === highlight.position && h.text === highlight.text);
+            });
+
+            // 通知外部更新高亮列表
+            if (this.onHighlightsUpdate) {
+                this.onHighlightsUpdate(this.highlights);
             }
         } else {
             // 还有其他评论，只更新评论
@@ -209,7 +205,7 @@ export class CommentService {
             await this.onRefreshView();
         }
     }
-    
+
     /**
      * 删除虚拟高亮（当取消添加评论时）
      */
@@ -217,7 +213,7 @@ export class CommentService {
         if (!highlight.isVirtual || (highlight.comments && highlight.comments.length > 0)) {
             return;
         }
-        
+
         const file = await this.getFileForHighlight(highlight);
         if (file) {
             await this.highlightManager.removeHighlight(file, highlight);
@@ -229,7 +225,7 @@ export class CommentService {
                 // 如果没有 ID，通过位置和文本比较
                 return !(h.position === highlight.position && h.text === highlight.text);
             });
-            
+
             // 通知外部更新高亮列表
             if (this.onHighlightsUpdate) {
                 this.onHighlightsUpdate(this.highlights);
@@ -242,7 +238,7 @@ export class CommentService {
             }
         }
     }
-    
+
     /**
      * 获取高亮对应的文件
      */
@@ -267,18 +263,5 @@ export class CommentService {
             }
         }
         return null;
-    }
-    
-    /**
-     * 检查高亮是否已经创建了闪卡
-     */
-    private checkHasFlashcard(highlightId: string): boolean {
-        const fsrsManager = this.plugin.fsrsManager;
-        if (!fsrsManager || !highlightId) {
-            return false;
-        }
-        
-        const cards = fsrsManager.findCardsBySourceId(highlightId, 'highlight');
-        return cards && cards.length > 0;
     }
 }

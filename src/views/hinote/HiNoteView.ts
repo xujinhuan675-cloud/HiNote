@@ -8,19 +8,18 @@ import { HighlightService } from '../../services/HighlightService';
 import { LocationService } from '../../services/LocationService';
 import { ExportService } from '../../services/ExportService';
 import {t} from "../../i18n";
-import { LicenseManager } from '../../services/LicenseManager';
-import { ExportManager, FlashcardViewManager, VirtualHighlightManager } from '../highlight';
+import { ExportManager, VirtualHighlightManager } from '../highlight';
 import { DeviceManager, EventCoordinator, UIInitializer } from '../managers';
 import { ViewState } from './ViewState';
 import { setupHiNoteView } from './HiNoteViewSetup';
 import { HiNoteViewSetupResult } from './HiNoteViewSetupTypes';
 import type { PluginServices } from '../../plugin/PluginServices';
 
-export const VIEW_TYPE_HINOTE = "hinote-view";
+export const VIEW_TYPE_HINOTE = "anchor-gloss-view";
 
 /**
  * HiNote 主视图
- * 负责显示和管理高亮、评论、闪卡等核心功能
+ * 负责显示和管理高亮、评论等核心功能
  */
 export class HiNoteView extends ItemView {
     // === 常量定义 ===
@@ -36,14 +35,12 @@ export class HiNoteView extends ItemView {
     private locationService: LocationService;
     private exportService: ExportService;
     private highlightService: HighlightService;
-    private licenseManager: LicenseManager;
     private canvasService: CanvasService;
 
     // === 视图装配产物 ===
     private setupResult: HiNoteViewSetupResult | null = null;
     private exportManager: ExportManager | null = null;
     private virtualHighlightManager: VirtualHighlightManager | null = null;
-    private flashcardViewManager: FlashcardViewManager | null = null;
     private deviceManager: DeviceManager | null = null;
     private uiInitializer: UIInitializer | null = null;
     private eventCoordinator: EventCoordinator | null = null;
@@ -62,7 +59,6 @@ export class HiNoteView extends ItemView {
             this.highlightService,
             () => this.plugin.settings
         );
-        this.licenseManager = new LicenseManager(this.plugin);
         this.canvasService = services.canvasService;
         
         // === 初始化新 Manager（需要在事件注册前初始化）===
@@ -71,7 +67,6 @@ export class HiNoteView extends ItemView {
         this.eventCoordinator = new EventCoordinator(this.app, this, services.eventManager);
         this.exportManager = new ExportManager(this.app, this.exportService);
         this.virtualHighlightManager = new VirtualHighlightManager(this.highlightManager);
-        this.flashcardViewManager = new FlashcardViewManager(this.app, this.plugin);
     }
 
     getViewType(): string {
@@ -79,7 +74,7 @@ export class HiNoteView extends ItemView {
     }
 
     getDisplayText(): string {
-        return "HiNote";
+        return "Anchor Gloss";
     }
 
     getIcon(): string {
@@ -113,7 +108,6 @@ export class HiNoteView extends ItemView {
             highlightManager: this.highlightManager,
             highlightRepository: this.highlightRepository,
             highlightService: this.highlightService,
-            licenseManager: this.licenseManager,
             exportService: this.exportService,
             canvasService: this.canvasService,
             deviceManager: this.deviceManager!,
@@ -121,7 +115,6 @@ export class HiNoteView extends ItemView {
             eventCoordinator: this.eventCoordinator!,
             exportManager: this.exportManager!,
             virtualHighlightManager: this.virtualHighlightManager!,
-            flashcardViewManager: this.flashcardViewManager!,
             canvasUpdateDelay: HiNoteView.CANVAS_UPDATE_DELAY,
             jumpToHighlight: async (highlight) => await this.jumpToHighlight(highlight),
             checkViewPosition: async () => await this.checkViewPosition(),
@@ -160,7 +153,6 @@ export class HiNoteView extends ItemView {
         if (this.setupResult) {
             this.setupResult.layoutManager.updateState({
                 isDraggedToMainView: this.state.isDraggedToMainView,
-                isFlashcardMode: this.state.isFlashcardMode,
                 isShowingFileList: this.state.isShowingFileList
             });
             await this.setupResult.layoutManager.updateViewLayout();

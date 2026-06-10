@@ -1,7 +1,6 @@
 import { TFile } from "obsidian";
 import { HighlightService } from "../../services/HighlightService";
 import CommentPlugin from "../../../main";
-import { LicenseManager } from "../../services/LicenseManager";
 import { FileListDataSource } from "./FileListDataSource";
 import { FileListItemRenderer } from "./FileListItemRenderer";
 
@@ -17,13 +16,11 @@ export class FileListManager {
     
     // 回调函数
     private onFileSelect: ((file: TFile | null) => void) | null = null;
-    private onFlashcardModeToggle: ((enabled: boolean) => void) | null = null;
     private onAllHighlightsSelect: (() => void) | null = null;
     private onRefreshView: (() => Promise<void>) | null = null;
     
     // 状态
     private currentFile: TFile | null = null;
-    private isFlashcardMode: boolean = false;
     private isMobileView: boolean = false;
     private isSmallScreen: boolean = false;
     private isDraggedToMainView: boolean = false;
@@ -31,8 +28,7 @@ export class FileListManager {
     constructor(
         container: HTMLElement,
         plugin: CommentPlugin,
-        highlightService: HighlightService,
-        _licenseManager: LicenseManager
+        highlightService: HighlightService
     ) {
         this.container = container;
         this.plugin = plugin;
@@ -42,11 +38,9 @@ export class FileListManager {
             dataSource: this.dataSource,
             getState: () => ({
                 currentFile: this.currentFile,
-                isFlashcardMode: this.isFlashcardMode,
                 isDraggedToMainView: this.isDraggedToMainView
             }),
             onFileSelect: () => this.onFileSelect,
-            onFlashcardModeToggle: () => this.onFlashcardModeToggle,
             onAllHighlightsSelect: () => this.onAllHighlightsSelect
         });
     }
@@ -56,15 +50,11 @@ export class FileListManager {
      */
     setCallbacks(callbacks: {
         onFileSelect?: (file: TFile | null) => void;
-        onFlashcardModeToggle?: (enabled: boolean) => void;
         onAllHighlightsSelect?: () => void;
         onRefreshView?: () => Promise<void>;
     }) {
         if (callbacks.onFileSelect) {
             this.onFileSelect = callbacks.onFileSelect;
-        }
-        if (callbacks.onFlashcardModeToggle) {
-            this.onFlashcardModeToggle = callbacks.onFlashcardModeToggle;
         }
         if (callbacks.onAllHighlightsSelect) {
             this.onAllHighlightsSelect = callbacks.onAllHighlightsSelect;
@@ -79,16 +69,12 @@ export class FileListManager {
      */
     updateState(state: {
         currentFile?: TFile | null;
-        isFlashcardMode?: boolean;
         isMobileView?: boolean;
         isSmallScreen?: boolean;
         isDraggedToMainView?: boolean;
     }) {
         if (state.currentFile !== undefined) {
             this.currentFile = state.currentFile;
-        }
-        if (state.isFlashcardMode !== undefined) {
-            this.isFlashcardMode = state.isFlashcardMode;
         }
         if (state.isMobileView !== undefined) {
             this.isMobileView = state.isMobileView;
@@ -133,7 +119,7 @@ export class FileListManager {
         });
 
         const titleEl = titleContainer.createEl("div", {
-            text: "HiNote",
+            text: "Anchor Gloss",
             cls: "highlight-file-list-title"
         });
         
@@ -150,9 +136,6 @@ export class FileListManager {
 
         // 添加"全部"选项
         this.itemRenderer.createAllHighlightsItem(fileList);
-
-        // 添加闪卡选项
-        this.itemRenderer.createFlashcardItem(fileList);
 
         // 添加分隔线
         fileList.createEl("div", {
@@ -198,7 +181,6 @@ export class FileListManager {
         this.itemRenderer.destroy();
         this.container.empty();
         this.onFileSelect = null;
-        this.onFlashcardModeToggle = null;
         this.onAllHighlightsSelect = null;
         this.onRefreshView = null;
     }

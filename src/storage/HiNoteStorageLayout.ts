@@ -5,7 +5,6 @@ export async function ensureHiNoteDirectoryStructure(app: App, vaultPath: string
     const directories = [
         FilePathUtils.getHiNoteDir(vaultPath),
         FilePathUtils.getHighlightsDir(vaultPath),
-        FilePathUtils.getFlashcardsDir(vaultPath),
         FilePathUtils.getMetadataDir(vaultPath)
     ];
 

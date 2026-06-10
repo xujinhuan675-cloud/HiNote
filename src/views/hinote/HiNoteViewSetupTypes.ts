@@ -5,7 +5,6 @@ import { ExportService } from "../../services/ExportService";
 import { HighlightManager } from "../../services/HighlightManager";
 import { HighlightRepository } from "../../repositories/HighlightRepository";
 import { HighlightService } from "../../services/HighlightService";
-import { LicenseManager } from "../../services/LicenseManager";
 import { CommentService } from "../../services/comment";
 import { GlobalHighlightService, HighlightDataService } from "../../services/highlight";
 import { HighlightInfo } from "../../types/highlight";
@@ -14,7 +13,6 @@ import {
     CommentController,
     CommentInputManager,
     ExportManager,
-    FlashcardViewManager,
     HighlightListController,
     HighlightRenderController,
     HighlightRenderManager,
@@ -43,7 +41,6 @@ export interface HiNoteViewSetupOptions {
     highlightManager: HighlightManager;
     highlightRepository: HighlightRepository;
     highlightService: HighlightService;
-    licenseManager: LicenseManager;
     exportService: ExportService;
     canvasService: CanvasService;
     deviceManager: DeviceManager;
@@ -51,7 +48,6 @@ export interface HiNoteViewSetupOptions {
     eventCoordinator: EventCoordinator;
     exportManager: ExportManager;
     virtualHighlightManager: VirtualHighlightManager;
-    flashcardViewManager: FlashcardViewManager;
     canvasUpdateDelay: number;
     jumpToHighlight: (highlight: HighlightInfo) => Promise<void>;
     checkViewPosition: () => Promise<void>;

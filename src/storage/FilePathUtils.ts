@@ -71,14 +71,6 @@ export class FilePathUtils {
         return `${this.getHiNoteDir(vaultPath)}/highlights`;
     }
 
-    /**
-     * 获取闪卡数据目录路径
-     * @param vaultPath Vault根目录路径
-     * @returns 闪卡数据目录路径
-     */
-    static getFlashcardsDir(vaultPath: string): string {
-        return `${this.getHiNoteDir(vaultPath)}/flashcards`;
-    }
 
     /**
      * 获取元数据目录路径

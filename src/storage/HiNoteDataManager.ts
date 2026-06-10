@@ -1,6 +1,5 @@
 import { App } from 'obsidian';
 import { HighlightInfo as HiNote } from '../types/highlight';
-import { FSRSStorage } from '../flashcard';
 import { DataValidator } from './DataValidator';
 import {
     convertToLegacyHighlight,
@@ -13,7 +12,6 @@ import {
     detectHighlightFilesFromStorage,
     ensureHiNoteDirectoryStructure
 } from './HiNoteStorageLayout';
-import { FlashcardDataStore } from './FlashcardDataStore';
 
 /**
  * HiNote数据管理器 - 存储层（已重构）
@@ -27,7 +25,6 @@ export class HiNoteDataManager {
     private app: App;
     private vaultPath: string;
     private fileMappingStore: FileMappingStore;
-    private flashcardDataStore: FlashcardDataStore;
     private readonly CURRENT_VERSION = '2.0';
 
     constructor(app: App) {
@@ -35,7 +32,6 @@ export class HiNoteDataManager {
         // 对于Obsidian，我们直接使用相对路径，不需要获取绝对路径
         this.vaultPath = '';
         this.fileMappingStore = new FileMappingStore(app, this.vaultPath, this.CURRENT_VERSION);
-        this.flashcardDataStore = new FlashcardDataStore(app, this.vaultPath);
     }
 
     /**
@@ -201,18 +197,4 @@ export class HiNoteDataManager {
         return mappedFiles;
     }
 
-
-    /**
-     * 获取闪卡数据
-     */
-    async getFlashcardData(): Promise<FSRSStorage | null> {
-        return this.flashcardDataStore.load();
-    }
-
-    /**
-     * 保存闪卡数据
-     */
-    async saveFlashcardData(data: FSRSStorage): Promise<void> {
-        await this.flashcardDataStore.save(data);
-    }
 }

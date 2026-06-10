@@ -38,7 +38,7 @@ export class HighlightDeletionManager {
             if (!skipConfirmation) {
                 const confirmDelete = await showConfirmModal(this.plugin.app, {
                     title: t('Delete highlight'),
-                    message: t('Delete this highlight and all its data, including Comments and HiCards? Can\'t undo.')
+                    message: t('Delete this highlight and all its data, including comments? Can\'t undo.')
                 });
                 if (!confirmDelete) {
                     return false;

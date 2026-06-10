@@ -2,14 +2,16 @@ import { Decoration, DecorationSet, EditorView, ViewPlugin, ViewUpdate } from "@
 import type { Range } from "@codemirror/state";
 import { MarkdownView, TFile } from "obsidian";
 import { CommentWidget, CommentWidgetHelper } from "../components/comment";
+import { InterlinearWidget } from "../components/interlinear/InterlinearWidget";
+import { getInlineComments } from "../components/interlinear/InterlinearCommentUtils";
 import { HighlightRepository } from "../repositories/HighlightRepository";
 import { HighlightService } from "../services/HighlightService";
 import { HighlightCommentResolver } from "../services/highlight";
 import { HighlightInfo as HiNote } from "../types/highlight";
-import type { HiNotePluginContext } from "../types/plugin";
+import type { AnchorGlossPluginContext } from "../types/plugin";
 
 interface EditorHighlightDecorationOptions {
-    plugin: HiNotePluginContext;
+    plugin: AnchorGlossPluginContext;
     highlightService: HighlightService;
     highlightRepository: HighlightRepository;
 }
@@ -57,6 +59,11 @@ export function createEditorHighlightDecorations(options: EditorHighlightDecorat
                 if (shouldShowCommentWidget(plugin)) {
                     decorations.push(createCommentWidget(plugin, commentHighlight).range(highlightEndPos));
                 }
+
+                const inlineComments = getInlineComments(commentHighlight.comments);
+                if (inlineComments.length > 0) {
+                    decorations.push(createInterlinearWidget(inlineComments).range(highlightEndPos));
+                }
             }
 
             return Decoration.set(decorations.sort((a, b) => a.from - b.from));
@@ -66,7 +73,7 @@ export function createEditorHighlightDecorations(options: EditorHighlightDecorat
     });
 }
 
-function createCommentWidget(plugin: HiNotePluginContext, highlight: HiNote): Decoration {
+function createCommentWidget(plugin: AnchorGlossPluginContext, highlight: HiNote): Decoration {
     return Decoration.widget({
         widget: new CommentWidget(
             plugin,
@@ -80,12 +87,20 @@ function createCommentWidget(plugin: HiNotePluginContext, highlight: HiNote): De
     });
 }
 
-function shouldShowCommentWidget(plugin: HiNotePluginContext): boolean {
+function createInterlinearWidget(comments: HiNote["comments"]): Decoration {
+    return Decoration.widget({
+        widget: new InterlinearWidget(comments || []),
+        side: 3,
+        block: true
+    });
+}
+
+function shouldShowCommentWidget(plugin: AnchorGlossPluginContext): boolean {
     return plugin.settings.showCommentWidget !== false;
 }
 
 function emitHighlightTextChange(
-    plugin: HiNotePluginContext,
+    plugin: AnchorGlossPluginContext,
     file: TFile,
     storedHighlight: HiNote,
     currentHighlight: HiNote

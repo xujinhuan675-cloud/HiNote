@@ -8,8 +8,6 @@ import { HighlightInfo } from '../../types/highlight';
 export class ViewState {
     currentFile: TFile | null = null;
     highlights: HighlightInfo[] = [];
-    highlightsWithFlashcards: Set<string> = new Set<string>();
-    isFlashcardMode: boolean = false;
     isDraggedToMainView: boolean = false;
     isMobileView: boolean = false;
     isSmallScreen: boolean = false;

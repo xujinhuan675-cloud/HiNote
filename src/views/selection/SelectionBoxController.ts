@@ -39,10 +39,7 @@ export class SelectionBoxController {
 
     private handleSelectionStart = (e: MouseEvent) => {
         const target = e.target as HTMLElement;
-        if (target.closest(".highlight-card") ||
-            target.closest(".flashcard-mode") ||
-            target.closest(".flashcard-add-group") ||
-            target.closest(".flashcard-group-action")) {
+        if (target.closest(".highlight-card")) {
             return;
         }
 

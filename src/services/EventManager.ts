@@ -6,7 +6,6 @@ export interface HighlightEvents {
     'comment:update': [filePath: string, oldComment: string, newComment: string, sourceId: string];
     'comment:delete': [filePath: string, comment: string, sourceId: string];
     'comment-input:open': [highlightId: string, text: string];
-    'flashcard:changed': [];
 }
 
 export class EventManager {
@@ -49,13 +48,6 @@ export class EventManager {
      */
     public emitCommentInputOpen(highlightId: string, text: string) {
         this.events.trigger('comment-input:open', highlightId, text);
-    }
-
-    /**
-     * 触发闪卡变化事件
-     */
-    public emitFlashcardChanged() {
-        this.events.trigger('flashcard:changed');
     }
 
     /**

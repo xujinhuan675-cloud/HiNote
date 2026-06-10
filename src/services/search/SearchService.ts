@@ -25,7 +25,6 @@ export class SearchService {
         const normalizedInput = searchInput.toLowerCase().trim();
         
         const isGlobalSearch = normalizedInput.startsWith('all:');
-        const isHiCardSearch = normalizedInput.startsWith('hicard:');
         const isCommentSearch = normalizedInput.startsWith('comment:');
         const isPathSearch = normalizedInput.startsWith('path:');
         
@@ -35,9 +34,6 @@ export class SearchService {
         if (isGlobalSearch) {
             searchType = 'all';
             searchTerm = normalizedInput.substring(4).trim();
-        } else if (isHiCardSearch) {
-            searchType = 'hicard';
-            searchTerm = normalizedInput.substring(7).trim();
         } else if (isCommentSearch) {
             searchType = 'comment';
             searchTerm = normalizedInput.substring(8).trim();
@@ -61,11 +57,6 @@ export class SearchService {
         // 如果是按路径搜索
         if (searchType === 'path') {
             return this.filterByPath(highlights, searchTerm);
-        }
-        
-        // 如果是搜索闪卡
-        if (searchType === 'hicard') {
-            return this.filterByFlashcard(highlights, searchTerm, currentFile);
         }
         
         // 如果是搜索批注
@@ -101,38 +92,6 @@ export class SearchService {
             }
             const filePath = highlight.filePath.toLowerCase();
             return filePath.includes(searchTerm.toLowerCase());
-        });
-    }
-    
-    /**
-     * 按闪卡过滤高亮
-     */
-    private filterByFlashcard(
-        highlights: HighlightInfo[],
-        searchTerm: string,
-        currentFile: TFile | null
-    ): HighlightInfo[] {
-        const fsrsManager = this.plugin.fsrsManager;
-        if (!fsrsManager) {
-            return [];
-        }
-        
-        return highlights.filter(highlight => {
-            // 检查高亮是否已转化为闪卡
-            const hasFlashcard = highlight.id ? 
-                fsrsManager.findCardsBySourceId(highlight.id, 'highlight').length > 0 : 
-                false;
-            
-            if (!hasFlashcard) {
-                return false;
-            }
-            
-            // 如果有搜索词，还需要匹配搜索词
-            if (searchTerm) {
-                return this.matchesSearchTerm(highlight, searchTerm, currentFile);
-            }
-            
-            return true;
         });
     }
     

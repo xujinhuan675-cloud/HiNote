@@ -3,6 +3,10 @@ export interface CommentItem {
     content: string;
     createdAt: number;
     updatedAt: number;
+    kind?: 'note' | 'translation' | 'explanation' | 'structure' | 'rewrite';
+    source?: 'manual' | 'ai';
+    inline?: boolean;
+    promptName?: string;
 }
 
 export interface HighlightInfo {

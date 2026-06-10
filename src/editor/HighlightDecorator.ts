@@ -6,14 +6,14 @@ import { PreviewWidgetRenderer } from '../views/highlight';
 import { createEditorHighlightDecorations } from "./EditorHighlightDecorations";
 import type { HighlightEvents } from "../services/EventManager";
 import type { EventManager } from "../services/EventManager";
-import type { HiNotePluginContext } from "../types/plugin";
+import type { AnchorGlossPluginContext } from "../types/plugin";
 
 interface EditorWithCodeMirror {
     cm?: EditorView;
 }
 
 export class HighlightDecorator {
-    private plugin: HiNotePluginContext;
+    private plugin: AnchorGlossPluginContext;
     private highlightRepository: HighlightRepository;
     private highlightPlugin: ReturnType<typeof createEditorHighlightDecorations> | null = null;
     private highlightService: HighlightService;
@@ -25,7 +25,7 @@ export class HighlightDecorator {
         highlightService: HighlightService,
         private eventManager: EventManager
     ) {
-        this.plugin = plugin as HiNotePluginContext;
+        this.plugin = plugin as AnchorGlossPluginContext;
         this.highlightRepository = highlightRepository;
         this.highlightService = highlightService;
         this.previewRenderer = new PreviewWidgetRenderer(
